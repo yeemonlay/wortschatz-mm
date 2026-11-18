@@ -3,7 +3,8 @@ import {
   signOut,
   onAuthStateChanged,
   User,
-  createUserWithEmailAndPassword,
+  GoogleAuthProvider,
+  signInWithPopup,
 } from 'firebase/auth';
 import { auth } from './firebase';
 
@@ -12,9 +13,9 @@ export const signInAdmin = async (email: string, pass: string): Promise<User> =>
   return credential.user;
 };
 
-// Helpful helper to initialize an admin account if needed
-export const createAdminAccount = async (email: string, pass: string): Promise<User> => {
-  const credential = await createUserWithEmailAndPassword(auth, email, pass);
+export const signInWithGoogle = async (): Promise<User> => {
+  const provider = new GoogleAuthProvider();
+  const credential = await signInWithPopup(auth, provider);
   return credential.user;
 };
 

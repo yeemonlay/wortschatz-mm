@@ -29,17 +29,24 @@ export const QuizView: React.FC = () => {
   };
 
   return (
-    <div className="max-w-xl mx-auto space-y-6">
-      <div className="text-center space-y-1">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-900 text-xs font-bold">
-          <Award className="w-3.5 h-3.5" />
-          <span>Der / Die / Das Practice</span>
+    <div className="space-y-4 md:space-y-6 animate-fadeIn">
+      {/* Header */}
+      <div className="flex items-start justify-between flex-wrap gap-2">
+        <div>
+          <h1 className="text-xl md:text-3xl font-black text-slate-900 tracking-tight">
+            Quizzes
+          </h1>
+          <p className="text-[11px] md:text-sm text-slate-500 mt-0.5">
+            Question {questionCount} • Score: {score} • Practice German articles with instant feedback
+          </p>
         </div>
-        <h1 className="text-2xl font-black text-slate-900">German Article Master</h1>
-        <p className="text-xs text-slate-500">
-          Question {questionCount} • Score: {score}
-        </p>
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-900 text-[10px] md:text-xs font-bold shadow-2xs self-start mt-0.5">
+          <Award className="w-3.5 h-3.5 text-indigo-600" />
+          <span>Article Master</span>
+        </div>
       </div>
+
+      <div className="max-w-xl mx-auto space-y-4">
 
       <div className="bg-white rounded-3xl border border-slate-200/90 shadow-xl p-6 sm:p-8 space-y-6 text-center">
         <div className="space-y-2">
@@ -106,13 +113,14 @@ export const QuizView: React.FC = () => {
             </p>
             <button
               onClick={handleReset}
-              className="w-full py-3 rounded-2xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800 transition-all flex items-center justify-center gap-2 shadow-xs"
+              className="w-full py-3 rounded-2xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 transition-all flex items-center justify-center gap-2 shadow-xs cursor-pointer"
             >
               <RotateCcw className="w-4 h-4" />
               <span>Next Question</span>
             </button>
           </div>
         )}
+      </div>
       </div>
     </div>
   );

@@ -78,7 +78,7 @@ export const App: React.FC = () => {
           />
         );
       case 'flashcards':
-        return <FlashcardsView />;
+        return <FlashcardsView words={words} loading={wordsLoading} />;
       case 'quiz':
         return <QuizView />;
       default:

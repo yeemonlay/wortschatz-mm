@@ -14,11 +14,13 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
   const isAdmin = !!currentUser;
 
   return (
-    <header className="md:hidden bg-white/90 backdrop-blur-md px-5 py-3.5 flex items-center justify-between border-b border-slate-200/70 sticky top-0 z-30 pt-safe">
+    <header className="md:hidden bg-white/90 backdrop-blur-md px-4 sm:px-6 py-3.5 flex items-center justify-between border-b border-slate-200/70 sticky top-0 z-30 pt-safe">
       <div className="flex items-center gap-2">
-        <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-indigo-600 to-purple-600 flex items-center justify-center text-white font-black text-sm shadow-xs">
-          W
-        </div>
+        <img
+          src="/logo.png"
+          alt="Wortschatz Logo"
+          className="w-8 h-8 rounded-xl object-cover shadow-2xs"
+        />
         <span className="font-black text-base text-slate-900">Wortschatz</span>
       </div>
 

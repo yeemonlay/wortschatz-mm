@@ -55,7 +55,7 @@ export const AppShell: React.FC<AppShellProps> = ({
         <div className="md:hidden fixed bottom-20 inset-x-4 flex items-center gap-2 z-30 max-w-md mx-auto">
           <button
             onClick={onOpenWordModal}
-            className="flex-1 py-2.5 px-3 rounded-2xl bg-slate-900/95 backdrop-blur-md text-white text-xs font-bold shadow-lg flex items-center justify-center gap-1.5 border border-slate-700/50"
+            className="flex-1 py-2.5 px-3 rounded-2xl bg-indigo-600/95 backdrop-blur-md text-white text-xs font-bold shadow-lg flex items-center justify-center gap-1.5 border border-indigo-400/30"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Add Word</span>

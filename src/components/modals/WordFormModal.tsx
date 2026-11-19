@@ -158,9 +158,6 @@ export const WordFormModal: React.FC<WordFormModalProps> = ({
             <h2 className="text-xl font-black text-slate-900">
               {editingWord ? 'Edit Vocabulary Entry' : 'Add New Vocabulary Entry'}
             </h2>
-            <p className="text-xs text-slate-500">
-              Saves directly to Cloud Firestore with CEFR Level & Category schema
-            </p>
           </div>
           <button
             type="button"
@@ -414,7 +411,7 @@ export const WordFormModal: React.FC<WordFormModalProps> = ({
               <button
                 type="submit"
                 disabled={loading}
-                className="px-5 py-2.5 rounded-2xl text-xs font-extrabold bg-slate-900 text-white hover:bg-slate-800 transition-all shadow-xs flex items-center gap-1.5"
+                className="px-5 py-2.5 rounded-2xl text-xs font-extrabold bg-indigo-600 text-white hover:bg-indigo-700 transition-all shadow-xs flex items-center gap-1.5 cursor-pointer"
               >
                 <Save className="w-3.5 h-3.5" />
                 <span>{loading ? 'Saving...' : editingWord ? 'Update Entry' : 'Save Entry'}</span>

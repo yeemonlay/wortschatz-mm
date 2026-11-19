@@ -27,13 +27,13 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onSelectTab })
               key={item.id}
               onClick={() => onSelectTab(item.id)}
               className={cn(
-                'flex-1 flex flex-col items-center gap-1 py-1 px-2 rounded-xl transition-all',
+                'flex-1 flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl transition-all cursor-pointer',
                 isActive
-                  ? 'text-amber-600 font-extrabold bg-amber-50/70'
-                  : 'text-slate-400 font-medium hover:text-slate-700'
+                  ? 'bg-indigo-600 text-white font-black shadow-xs'
+                  : 'text-slate-500 font-medium hover:text-slate-800'
               )}
             >
-              <Icon className={cn('w-5 h-5 transition-transform', isActive && 'scale-110')} />
+              <Icon className={cn('w-4 h-4 transition-transform', isActive && 'scale-105')} />
               <span className="text-[11px] leading-tight tracking-tight">{item.label}</span>
             </button>
           );

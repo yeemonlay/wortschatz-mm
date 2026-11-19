@@ -430,7 +430,7 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
                     type="button"
                     onClick={handleCommitImport}
                     disabled={loading}
-                    className="px-5 py-2.5 rounded-2xl text-xs font-extrabold bg-slate-900 text-white hover:bg-slate-800 shadow-xs"
+                    className="px-5 py-2.5 rounded-2xl text-xs font-extrabold bg-indigo-600 text-white hover:bg-indigo-700 shadow-xs cursor-pointer"
                   >
                     {loading ? 'Writing to Firestore...' : 'Commit Batch Write to Firestore'}
                   </button>
@@ -456,7 +456,7 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
             <button
               onClick={handleExportDownload}
               disabled={loading}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-slate-900 text-white text-xs font-extrabold hover:bg-slate-800 shadow-xs"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-indigo-600 text-white text-xs font-extrabold hover:bg-indigo-700 shadow-xs cursor-pointer"
             >
               <Download className="w-4 h-4" />
               <span>{loading ? 'Preparing Snapshot...' : 'Download JSON Snapshot'}</span>

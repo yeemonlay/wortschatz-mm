@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   Search,
   Filter,
@@ -8,10 +8,11 @@ import {
   Edit3,
   Trash2,
   X,
-  Eye,
   WifiOff,
   AlertCircle,
   Database,
+  ArrowUp,
+  Loader2,
 } from 'lucide-react';
 import {
   VocabularyWord,
@@ -23,6 +24,8 @@ import {
 import { subscribeToVocabulary, deleteVocabularyWord } from '@/services/vocabularyService';
 import { speakGerman } from '@/services/audioService';
 import { useNetworkStatus } from '@/hooks';
+import { cn } from '@/utils/cn';
+import { CustomSelect, CustomSelectOption } from '@/components/ui/CustomSelect';
 
 interface WordBankViewProps {
   isAdmin?: boolean;
@@ -31,6 +34,25 @@ interface WordBankViewProps {
   selectedLevel?: string;
   onSelectLevel?: (level: string) => void;
 }
+
+const BATCH_SIZE = 40;
+
+const TYPE_OPTIONS: CustomSelectOption[] = [
+  { value: 'all', label: 'All Types' },
+  { value: 'noun', label: 'Nouns' },
+  { value: 'verb', label: 'Verbs' },
+  { value: 'adjective', label: 'Adjectives' },
+  { value: 'sentence', label: 'Sentences' },
+];
+
+const CATEGORY_OPTIONS: CustomSelectOption[] = [
+  { value: 'all', label: 'All 16 Categories' },
+  ...Object.entries(CATEGORIES_META).map(([cKey, cat]) => ({
+    value: cKey,
+    label: cat.label,
+    emoji: cat.emoji,
+  })),
+];
 
 export const WordBankView: React.FC<WordBankViewProps> = ({
   isAdmin = false,
@@ -47,6 +69,11 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
   const [selectedType, setSelectedType] = useState<string>('all');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
   const [audioPlaying, setAudioPlaying] = useState<string | null>(null);
+
+  // Progressive batching & scroll state
+  const [visibleCount, setVisibleCount] = useState<number>(BATCH_SIZE);
+  const [showBackToTop, setShowBackToTop] = useState(false);
+  const sentinelRef = useRef<HTMLDivElement | null>(null);
 
   const isOnline = useNetworkStatus();
 
@@ -104,6 +131,52 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
     return matchesSearch && matchesLevel && matchesCategory && matchesType;
   });
 
+  // Reset visible items when search query or filters change
+  useEffect(() => {
+    setVisibleCount(BATCH_SIZE);
+  }, [searchQuery, selectedLevel, selectedCategory, selectedType]);
+
+  // Infinite scroll observer: load next batch as sentinel comes into view
+  useEffect(() => {
+    const sentinel = sentinelRef.current;
+    if (!sentinel) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setVisibleCount((prev) => {
+            if (prev < filteredWords.length) {
+              return Math.min(prev + BATCH_SIZE, filteredWords.length);
+            }
+            return prev;
+          });
+        }
+      },
+      { rootMargin: '300px' }
+    );
+
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [filteredWords.length]);
+
+  // Monitor scroll for Floating Back to Top Button
+  useEffect(() => {
+    const handleScroll = () => {
+      setShowBackToTop(window.scrollY > 400);
+    };
+
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  };
+
+  // Slice visible items for rendering
+  const visibleWords = filteredWords.slice(0, visibleCount);
+  const hasMore = visibleCount < filteredWords.length;
+
   const handleAudioPlay = async (word: string, id: string) => {
     setAudioPlaying(id);
     await speakGerman(word);
@@ -120,10 +193,10 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
   };
 
   return (
-    <div className="space-y-4 animate-fadeIn">
+    <div className="animate-fadeIn">
       {/* Offline Status Banner */}
       {!isOnline && (
-        <div className="bg-amber-500/15 border border-amber-500/30 text-amber-900 px-4 py-2 rounded-2xl flex items-center justify-between text-xs font-bold">
+        <div className="mb-4 bg-amber-500/15 border border-amber-500/30 text-amber-900 px-4 py-2 rounded-2xl flex items-center justify-between text-xs font-bold">
           <div className="flex items-center gap-2">
             <WifiOff className="w-4 h-4 text-amber-700" />
             <span>Offline mode active — using cached vocabulary from local persistence.</span>
@@ -136,7 +209,7 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
 
       {/* Firestore Connection Error Banner */}
       {firestoreError && (
-        <div className="bg-rose-50 border border-rose-200 text-rose-900 p-4 rounded-2xl flex items-start gap-3 text-xs">
+        <div className="mb-4 bg-rose-50 border border-rose-200 text-rose-900 p-4 rounded-2xl flex items-start gap-3 text-xs">
           <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
           <div className="space-y-1">
             <h4 className="font-extrabold text-rose-800">
@@ -153,105 +226,108 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
           MOBILE VIEW (matches Mock UI isMobile buildDictionaryViewHtml)
           ======================================================== */}
       <div className="md:hidden space-y-3">
-        {/* Mobile Header Bar */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-xl font-black text-slate-900">Word Bank</h1>
-            <p className="text-[11px] text-slate-500">
-              {loading ? 'Loading...' : `${filteredWords.length} entries shown`}
-            </p>
+        {/* Mobile Sticky Filter Panel */}
+        <div className="sticky top-[56px] z-20 -mx-4 px-4 pt-0 pb-2.5 bg-[#f8f7f4]/95 backdrop-blur-md border-b border-slate-200/60 shadow-2xs space-y-2.5 transition-all">
+          {/* Mobile Header Bar */}
+          <div className="flex items-center justify-between">
+            <div>
+              <h1 className="text-xl md:text-3xl font-black text-slate-900 tracking-tight">Word Bank</h1>
+              <p className="text-[11px] md:text-sm text-slate-500 mt-0.5">
+                {loading
+                  ? 'Loading...'
+                  : `${Math.min(visibleWords.length, filteredWords.length)} of ${filteredWords.length} shown`}
+              </p>
+            </div>
+            <div className="w-28 shrink-0">
+              <CustomSelect
+                value={selectedType}
+                onChange={setSelectedType}
+                options={TYPE_OPTIONS}
+                buttonClassName="h-[34px] px-2.5 pr-7 text-[11px] bg-white rounded-xl"
+                menuClassName="right-0 left-auto min-w-[140px]"
+              />
+            </div>
           </div>
-          <div className="flex items-center gap-1">
-            <select
-              value={selectedType}
-              onChange={(e) => setSelectedType(e.target.value)}
-              className="text-[11px] font-extrabold bg-white border border-slate-200 rounded-xl px-2.5 py-1.5 text-slate-700 shadow-2xs focus:outline-hidden"
-            >
-              <option value="all">All Types</option>
-              <option value="noun">Nouns</option>
-              <option value="verb">Verbs</option>
-              <option value="adjective">Adjectives</option>
-              <option value="sentence">Sentences</option>
-            </select>
-          </div>
-        </div>
 
-        {/* Mobile Search Bar */}
-        <div className="relative">
-          <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-          <input
-            type="text"
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            placeholder="Search words..."
-            className="w-full pl-9 pr-8 py-2.5 bg-white border border-slate-200/90 rounded-2xl text-xs font-semibold placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
-          />
-          {searchQuery && (
+          {/* Mobile Search Bar */}
+          <div className="relative">
+            <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <input
+              type="text"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              placeholder="Search words..."
+              className="w-full pl-9 pr-8 py-2 bg-white border border-slate-200/90 rounded-2xl text-xs font-semibold placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery('')}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 p-0.5"
+              >
+                <X className="w-3.5 h-3.5" />
+              </button>
+            )}
+          </div>
+
+          {/* Mobile Horizontal Category Chips */}
+          <div className="flex items-center gap-1.5 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-none">
             <button
-              onClick={() => setSearchQuery('')}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 p-0.5"
+              onClick={() => setSelectedCategory('all')}
+              className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-bold border transition-all ${
+                selectedCategory === 'all'
+                  ? 'bg-indigo-600 text-white border-indigo-600 shadow-2xs'
+                  : 'bg-white text-slate-600 border-slate-200'
+              }`}
             >
-              <X className="w-3.5 h-3.5" />
+              All
             </button>
-          )}
-        </div>
+            {Object.entries(CATEGORIES_META).map(([cKey, cat]) => {
+              const active = selectedCategory === cKey;
+              return (
+                <button
+                  key={cKey}
+                  onClick={() => setSelectedCategory(cKey)}
+                  className={`shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all ${
+                    active
+                      ? 'bg-indigo-600 text-white border-indigo-600 shadow-2xs'
+                      : 'bg-white text-slate-600 border-slate-200'
+                  }`}
+                >
+                  <span>{cat.emoji}</span>
+                  <span>{cat.label}</span>
+                </button>
+              );
+            })}
+          </div>
 
-        {/* Mobile Horizontal Category Chips */}
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-none">
-          <button
-            onClick={() => setSelectedCategory('all')}
-            className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-bold border transition-all ${
-              selectedCategory === 'all'
-                ? 'bg-slate-900 text-white border-slate-900'
-                : 'bg-white text-slate-600 border-slate-200'
-            }`}
-          >
-            All
-          </button>
-          {Object.entries(CATEGORIES_META).map(([cKey, cat]) => {
-            const active = selectedCategory === cKey;
-            return (
-              <button
-                key={cKey}
-                onClick={() => setSelectedCategory(cKey)}
-                className={`shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all ${
-                  active
-                    ? 'bg-slate-900 text-white border-slate-900'
-                    : 'bg-white text-slate-600 border-slate-200'
-                }`}
-              >
-                <span>{cat.emoji}</span>
-                <span>{cat.label}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Mobile CEFR Pills */}
-        <div className="flex items-center justify-between gap-1 bg-white p-1.5 rounded-2xl border border-slate-200 shadow-2xs">
-          <button
-            onClick={() => handleSetLevel('all')}
-            className={`flex-1 py-1 text-center rounded-xl text-[10px] font-black transition-all ${
-              selectedLevel === 'all' ? 'bg-slate-900 text-white' : 'text-slate-500'
-            }`}
-          >
-            ALL
-          </button>
-          {CEFR_LEVELS_LIST.map((lvl) => {
-            const s = LEVEL_STYLES[lvl];
-            const active = selectedLevel === lvl.toLowerCase();
-            return (
-              <button
-                key={lvl}
-                onClick={() => handleSetLevel(lvl)}
-                className={`flex-1 py-1 text-center rounded-xl text-[10px] font-black transition-all ${
-                  active ? `${s.badgeBg} ${s.badgeText} ring-1 ring-slate-900` : 'text-slate-500'
-                }`}
-              >
-                {lvl}
-              </button>
-            );
-          })}
+          {/* Mobile CEFR Pills */}
+          <div className="flex items-center justify-between gap-1 bg-white p-1.5 rounded-2xl border border-slate-200 shadow-2xs">
+            <button
+              onClick={() => handleSetLevel('all')}
+              className={`flex-1 py-1 text-center rounded-xl text-[10px] font-black transition-all ${
+                selectedLevel === 'all' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-500'
+              }`}
+            >
+              ALL
+            </button>
+            {CEFR_LEVELS_LIST.map((lvl) => {
+              const s = LEVEL_STYLES[lvl];
+              const active = selectedLevel === lvl.toLowerCase();
+              return (
+                <button
+                  key={lvl}
+                  onClick={() => handleSetLevel(lvl)}
+                  className={`flex-1 py-1 text-center rounded-xl text-[10px] font-black transition-all ${
+                    active
+                      ? `${s.badgeBg} ${s.badgeText} ring-2 ring-indigo-600 ring-offset-1 ring-offset-white font-black`
+                      : 'text-slate-500'
+                  }`}
+                >
+                  {lvl}
+                </button>
+              );
+            })}
+          </div>
         </div>
 
         {/* Mobile Vocabulary Cards */}
@@ -274,7 +350,7 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
               {isAdmin && (
                 <button
                   onClick={onOpenImportExport}
-                  className="px-3.5 py-1.5 rounded-xl bg-slate-900 text-white text-xs font-bold"
+                  className="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700"
                 >
                   Import Words to Database
                 </button>
@@ -285,7 +361,7 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
               No vocabulary matches your search or filters.
             </div>
           ) : (
-            filteredWords.map((item) => {
+            visibleWords.map((item) => {
               const lvl = LEVEL_STYLES[item.level] || LEVEL_STYLES.A1;
               const cat = CATEGORIES_META[item.category] || CATEGORIES_META.other;
               const articleStyle = item.article ? ARTICLE_PILL_STYLES[item.article] : '';
@@ -388,124 +464,113 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
           DESKTOP VIEW (matches Mock UI buildDictionaryViewHtml)
           ======================================================== */}
       <div className="hidden md:block space-y-4">
-        {/* Desktop Header */}
-        <div className="flex items-center justify-between flex-wrap gap-2">
-          <div>
-            <h1 className="text-2xl font-black text-slate-900 tracking-tight">Word Bank</h1>
-            <p className="text-xs text-slate-500">
-              {loading ? 'Connecting...' : `Showing ${filteredWords.length} of ${words.length} entries`}
-            </p>
+        {/* Desktop Sticky Header & Filter Toolbar */}
+        <div className="sticky top-[65px] z-20 -mx-4 sm:-mx-6 md:-mx-8 px-4 sm:px-6 md:px-8 pt-0 pb-3 bg-[#f8f7f4]/95 backdrop-blur-md border-b border-slate-200/60 shadow-2xs space-y-3 transition-all">
+          {/* Desktop Header Bar */}
+          <div className="flex items-center justify-between flex-wrap gap-2">
+            <div>
+              <h1 className="text-xl md:text-3xl font-black text-slate-900 tracking-tight">Word Bank</h1>
+              <p className="text-[11px] md:text-sm text-slate-500 mt-0.5">
+                {loading
+                  ? 'Connecting...'
+                  : `Showing ${Math.min(visibleWords.length, filteredWords.length)} of ${filteredWords.length} entries (${words.length} total)`}
+              </p>
+            </div>
+
+            {isAdmin && (
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={onOpenImportExport}
+                  className="px-3 py-1.5 bg-white border border-slate-200 text-xs font-bold rounded-xl hover:bg-slate-50 flex items-center gap-1.5 shadow-2xs transition-all"
+                >
+                  <Upload className="w-3.5 h-3.5 text-indigo-600" />
+                  <span>Import</span>
+                </button>
+                <button
+                  onClick={() => onOpenWordModal()}
+                  className="px-3.5 py-1.5 bg-indigo-600 text-white text-xs font-black rounded-xl hover:bg-indigo-700 flex items-center gap-1 shadow-xs transition-all"
+                >
+                  <Plus className="w-3.5 h-3.5" />
+                  <span>Add Entry</span>
+                </button>
+              </div>
+            )}
           </div>
 
-          {isAdmin ? (
-            <div className="flex items-center gap-2">
+          {/* Desktop Filter Toolbar */}
+          <div className="bg-white rounded-[24px] p-3.5 border border-slate-200/80 shadow-2xs space-y-3">
+            <div className="grid grid-cols-12 gap-2.5">
+              <div className="col-span-5 relative">
+                <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search German, English or Myanmar..."
+                  className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-hidden focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400/20"
+                />
+                {searchQuery && (
+                  <button
+                    onClick={() => setSearchQuery('')}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 p-0.5 hover:text-slate-600"
+                  >
+                    <X className="w-3.5 h-3.5" />
+                  </button>
+                )}
+              </div>
+
+              <div className="col-span-3">
+                <CustomSelect
+                  value={selectedType}
+                  onChange={setSelectedType}
+                  options={TYPE_OPTIONS}
+                />
+              </div>
+
+              <div className="col-span-4">
+                <CustomSelect
+                  value={selectedCategory}
+                  onChange={setSelectedCategory}
+                  options={CATEGORY_OPTIONS}
+                />
+              </div>
+            </div>
+
+            {/* CEFR Filter Pills */}
+            <div className="flex items-center gap-1.5 flex-wrap pt-0.5">
+              <span className="text-[11px] font-bold text-slate-400 mr-1 flex items-center gap-1">
+                <Filter className="w-3 h-3" /> Level:
+              </span>
               <button
-                onClick={onOpenImportExport}
-                className="px-3 py-1.5 bg-white border border-slate-200 text-xs font-bold rounded-xl hover:bg-slate-50 flex items-center gap-1.5 shadow-2xs transition-all"
+                onClick={() => handleSetLevel('all')}
+                className={`px-2.5 py-0.5 rounded-full text-xs font-bold transition-all ${
+                  selectedLevel === 'all'
+                    ? 'bg-indigo-600 text-white shadow-2xs'
+                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
+                }`}
               >
-                <Upload className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Import</span>
+                All
               </button>
-              <button
-                onClick={() => onOpenWordModal()}
-                className="px-3.5 py-1.5 bg-slate-900 text-white text-xs font-black rounded-xl hover:bg-slate-800 flex items-center gap-1 shadow-xs transition-all"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Add Entry</span>
-              </button>
+              {CEFR_LEVELS_LIST.map((lvl) => {
+                const s = LEVEL_STYLES[lvl];
+                const active = selectedLevel === lvl.toLowerCase();
+                return (
+                  <button
+                    key={lvl}
+                    onClick={() => handleSetLevel(lvl)}
+                    className={`px-2.5 py-0.5 rounded-full text-xs font-extrabold transition-all ${
+                      s.badgeBg
+                    } ${s.badgeText} ${
+                      active
+                        ? 'ring-2 ring-indigo-600 ring-offset-2 ring-offset-white font-black shadow-2xs'
+                        : 'opacity-70 hover:opacity-100'
+                    }`}
+                  >
+                    {lvl}
+                  </button>
+                );
+              })}
             </div>
-          ) : (
-            <span className="text-xs font-bold px-3 py-1 bg-slate-100 text-slate-600 rounded-full flex items-center gap-1.5 border border-slate-200/80">
-              <Eye className="w-3.5 h-3.5" />
-              <span>Public Read-Only</span>
-            </span>
-          )}
-        </div>
-
-        {/* Desktop Filter Toolbar */}
-        <div className="bg-white rounded-[24px] p-4 border border-slate-200/80 shadow-2xs space-y-3">
-          <div className="grid grid-cols-12 gap-2.5">
-            <div className="col-span-5 relative">
-              <Search className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search German, English or Myanmar..."
-                className="w-full pl-9 pr-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold focus:outline-hidden focus:border-indigo-400 focus:ring-1 focus:ring-indigo-400/20"
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery('')}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 p-0.5 hover:text-slate-600"
-                >
-                  <X className="w-3.5 h-3.5" />
-                </button>
-              )}
-            </div>
-
-            <div className="col-span-3">
-              <select
-                value={selectedType}
-                onChange={(e) => setSelectedType(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-hidden"
-              >
-                <option value="all">All Types</option>
-                <option value="noun">Nouns</option>
-                <option value="verb">Verbs</option>
-                <option value="adjective">Adjectives</option>
-                <option value="sentence">Sentences</option>
-              </select>
-            </div>
-
-            <div className="col-span-4">
-              <select
-                value={selectedCategory}
-                onChange={(e) => setSelectedCategory(e.target.value)}
-                className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-700 focus:outline-hidden"
-              >
-                <option value="all">All 16 Categories</option>
-                {Object.entries(CATEGORIES_META).map(([cKey, cat]) => (
-                  <option key={cKey} value={cKey}>
-                    {cat.emoji} {cat.label}
-                  </option>
-                ))}
-              </select>
-            </div>
-          </div>
-
-          {/* CEFR Filter Pills */}
-          <div className="flex items-center gap-1.5 flex-wrap pt-1">
-            <span className="text-[11px] font-bold text-slate-400 mr-1 flex items-center gap-1">
-              <Filter className="w-3 h-3" /> Level:
-            </span>
-            <button
-              onClick={() => handleSetLevel('all')}
-              className={`px-2.5 py-0.5 rounded-full text-xs font-bold transition-all ${
-                selectedLevel === 'all'
-                  ? 'bg-slate-900 text-white'
-                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
-              }`}
-            >
-              All
-            </button>
-            {CEFR_LEVELS_LIST.map((lvl) => {
-              const s = LEVEL_STYLES[lvl];
-              const active = selectedLevel === lvl.toLowerCase();
-              return (
-                <button
-                  key={lvl}
-                  onClick={() => handleSetLevel(lvl)}
-                  className={`px-2.5 py-0.5 rounded-full text-xs font-extrabold transition-all ${
-                    s.badgeBg
-                  } ${s.badgeText} ${
-                    active ? 'ring-2 ring-slate-900 font-black' : 'opacity-70 hover:opacity-100'
-                  }`}
-                >
-                  {lvl}
-                </button>
-              );
-            })}
           </div>
         </div>
 
@@ -536,7 +601,7 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
               {isAdmin && (
                 <button
                   onClick={onOpenImportExport}
-                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-bold hover:bg-slate-800"
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 shadow-xs cursor-pointer"
                 >
                   <Upload className="w-3.5 h-3.5" />
                   <span>Import Vocabulary to Firestore</span>
@@ -548,7 +613,7 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
               No vocabulary matches your search or filters.
             </div>
           ) : (
-            filteredWords.map((item) => {
+            visibleWords.map((item) => {
               const lvl = LEVEL_STYLES[item.level] || LEVEL_STYLES.A1;
               const cat = CATEGORIES_META[item.category] || CATEGORIES_META.other;
               const articleStyle = item.article ? ARTICLE_PILL_STYLES[item.article] : '';
@@ -647,6 +712,40 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
           )}
         </div>
       </div>
+
+      {/* Shared Sentinel for Infinite Scroll (Visible to IntersectionObserver on both Mobile & Desktop) */}
+      <div ref={sentinelRef} className="h-6" />
+
+      {/* Progress & Loading Status Indicator */}
+      {filteredWords.length > 0 && (
+        <div className="py-4 text-center text-xs font-semibold text-slate-400 flex items-center justify-center gap-2">
+          {hasMore ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin text-indigo-500" />
+              <span>Loading more words ({visibleWords.length} of {filteredWords.length})...</span>
+            </>
+          ) : (
+            <span className="text-slate-500 bg-slate-200/60 px-3 py-1 rounded-full text-[11px] font-bold">
+              All {filteredWords.length} entries loaded
+            </span>
+          )}
+        </div>
+      )}
+
+      {/* Floating Back to Top Button */}
+      {showBackToTop && (
+        <button
+          onClick={scrollToTop}
+          className={cn(
+            'fixed right-5 z-30 p-3 rounded-full bg-indigo-600 text-white shadow-xl hover:bg-indigo-700 transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center border border-indigo-400/30 cursor-pointer',
+            isAdmin ? 'bottom-32 md:bottom-8' : 'bottom-20 md:bottom-8'
+          )}
+          title="Back to top"
+          aria-label="Back to top"
+        >
+          <ArrowUp className="w-4 h-4" />
+        </button>
+      )}
     </div>
   );
 };

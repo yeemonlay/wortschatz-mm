@@ -172,8 +172,8 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
               Choose a topic deck to practice German active recall with bite-sized rounds
             </p>
           </div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-amber-100 text-amber-900 text-[10px] md:text-xs font-bold shadow-2xs self-start mt-0.5">
-            <Sparkles className="w-3.5 h-3.5 text-amber-600" />
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-900 text-[10px] md:text-xs font-bold shadow-2xs self-start mt-0.5">
+            <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
             <span>Active Recall</span>
           </div>
         </div>
@@ -397,7 +397,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           </div>
           <div className="h-1.5 w-full bg-slate-200/80 rounded-full overflow-hidden">
             <div
-              className="h-full bg-emerald-500 rounded-full transition-all duration-300"
+              className="h-full bg-indigo-600 rounded-full transition-all duration-300"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -409,12 +409,12 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           className="bg-white rounded-[32px] border border-slate-200/90 shadow-md overflow-hidden cursor-pointer select-none transition-all hover:shadow-lg active:scale-[0.99]"
         >
           {/* Pastel Header Banner */}
-          <div className="bg-[#f7e99f] px-5 py-3 flex items-center justify-between">
-            <span className="text-xs font-bold text-amber-950 flex items-center gap-1.5">
+          <div className="bg-indigo-50 border-b border-indigo-100 px-5 py-3 flex items-center justify-between">
+            <span className="text-xs font-bold text-indigo-900 flex items-center gap-1.5">
               <span>{cat.emoji}</span>
               <span>{cat.label}</span>
             </span>
-            <span className="text-[10px] font-black bg-black/10 text-amber-950 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+            <span className="text-[10px] font-black bg-indigo-100 text-indigo-800 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
               {currentCard.type}
             </span>
           </div>
@@ -474,12 +474,12 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
 
                 {/* Example sentence callout */}
                 {currentCard.exampleGerman && (
-                  <div className="bg-[#fcf8e8] border border-[#f3e6b3] rounded-2xl p-3 text-xs font-medium text-amber-950 flex items-start gap-2 text-left mt-2">
+                  <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs font-medium text-slate-800 flex items-start gap-2 text-left mt-2">
                     <Lightbulb className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                     <div>
                       <p className="font-bold">"{currentCard.exampleGerman}"</p>
                       {currentCard.exampleEnglish && (
-                        <p className="text-amber-800/80 text-[11px] mt-0.5">
+                        <p className="text-slate-600 text-[11px] mt-0.5">
                           {currentCard.exampleEnglish}
                         </p>
                       )}

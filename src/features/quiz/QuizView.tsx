@@ -310,16 +310,16 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 }}
                 className={`p-5 rounded-3xl border text-left flex flex-col justify-between transition-all select-none cursor-pointer group ${
                   selectedMode === 'articles'
-                    ? 'bg-gradient-to-br from-blue-50/90 via-white to-sky-100/40 border-blue-300 shadow-sm'
-                    : 'bg-white border-slate-200/80 shadow-2xs hover:border-blue-300 hover:-translate-y-0.5'
+                    ? 'bg-gradient-to-br from-indigo-50/90 via-white to-indigo-100/40 border-indigo-300 shadow-sm'
+                    : 'bg-white border-slate-200/80 shadow-2xs hover:border-indigo-300 hover:-translate-y-0.5'
                 }`}
               >
                 <div className="space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <div className="w-11 h-11 rounded-2xl bg-blue-50 border border-blue-100 flex items-center justify-center text-2xl shadow-2xs">
+                    <div className="w-11 h-11 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-2xl shadow-2xs">
                       👑
                     </div>
-                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-blue-100 text-blue-900">
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-900">
                       {nounWordsCount} Nouns
                     </span>
                   </div>
@@ -333,7 +333,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
                   </div>
                 </div>
 
-                <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-blue-600">
+                <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-600">
                   <span>Start Articles Quiz</span>
                   <span className="group-hover:translate-x-1 transition-transform">→</span>
                 </div>
@@ -379,12 +379,12 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 }}
                 className={`p-5 rounded-3xl border text-left flex flex-col justify-between transition-all select-none cursor-pointer group ${
                   selectedMode === 'sentence'
-                    ? 'bg-gradient-to-br from-emerald-50/90 via-white to-emerald-100/40 border-emerald-300 shadow-sm'
-                    : 'bg-white border-slate-200/80 shadow-2xs hover:border-emerald-300 hover:-translate-y-0.5'
+                    ? 'bg-gradient-to-br from-indigo-50/90 via-white to-indigo-100/40 border-indigo-300 shadow-sm'
+                    : 'bg-white border-slate-200/80 shadow-2xs hover:border-indigo-300 hover:-translate-y-0.5'
                 }`}
               >
                 <div className="space-y-2.5">
-                  <div className="w-11 h-11 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-2xl shadow-2xs">
+                  <div className="w-11 h-11 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-2xl shadow-2xs">
                     🧩
                   </div>
                   <div>
@@ -397,7 +397,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
                   </div>
                 </div>
 
-                <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-emerald-600">
+                <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-600">
                   <span>Start Sentence Quiz</span>
                   <span className="group-hover:translate-x-1 transition-transform">→</span>
                 </div>
@@ -411,12 +411,12 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 }}
                 className={`p-5 rounded-3xl border text-left flex flex-col justify-between transition-all select-none cursor-pointer group ${
                   selectedMode === 'mixed'
-                    ? 'bg-gradient-to-br from-amber-50/90 via-white to-amber-100/40 border-amber-300 shadow-sm'
-                    : 'bg-white border-slate-200/80 shadow-2xs hover:border-amber-300 hover:-translate-y-0.5'
+                    ? 'bg-gradient-to-br from-indigo-50/90 via-white to-indigo-100/40 border-indigo-300 shadow-sm'
+                    : 'bg-white border-slate-200/80 shadow-2xs hover:border-indigo-300 hover:-translate-y-0.5'
                 }`}
               >
                 <div className="space-y-2.5">
-                  <div className="w-11 h-11 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-2xl shadow-2xs">
+                  <div className="w-11 h-11 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-2xl shadow-2xs">
                     🎲
                   </div>
                   <div>
@@ -429,7 +429,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
                   </div>
                 </div>
 
-                <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-amber-700">
+                <div className="pt-3 mt-4 border-t border-slate-100 flex items-center justify-between text-xs font-bold text-indigo-600">
                   <span>Start Mixed Quiz</span>
                   <span className="group-hover:translate-x-1 transition-transform">→</span>
                 </div>

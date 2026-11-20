@@ -70,21 +70,21 @@ export interface CategoryMeta {
 }
 
 export const CATEGORIES_META: Record<VocabularyCategory, CategoryMeta> = {
-  greetings: { emoji: '👋', label: 'Greetings', pillClass: 'bg-amber-100 text-amber-900 border-amber-200' },
-  people: { emoji: '👥', label: 'People', pillClass: 'bg-rose-100 text-rose-900 border-rose-200' },
-  home: { emoji: '🏠', label: 'Home', pillClass: 'bg-orange-100 text-orange-900 border-orange-200' },
-  food: { emoji: '🥐', label: 'Food', pillClass: 'bg-lime-100 text-lime-900 border-lime-200' },
-  shopping: { emoji: '🛍️', label: 'Shopping', pillClass: 'bg-pink-100 text-pink-900 border-pink-200' },
-  travel: { emoji: '✈️', label: 'Travel', pillClass: 'bg-sky-100 text-sky-900 border-sky-200' },
-  work: { emoji: '💼', label: 'Work', pillClass: 'bg-indigo-100 text-indigo-900 border-indigo-200' },
-  education: { emoji: '🎓', label: 'Education', pillClass: 'bg-violet-100 text-violet-900 border-violet-200' },
-  health: { emoji: '❤️‍🩹', label: 'Health', pillClass: 'bg-red-100 text-red-900 border-red-200' },
-  nature: { emoji: '🌿', label: 'Nature', pillClass: 'bg-emerald-100 text-emerald-900 border-emerald-200' },
-  time: { emoji: '⏳', label: 'Time', pillClass: 'bg-cyan-100 text-cyan-900 border-cyan-200' },
-  places: { emoji: '📍', label: 'Places', pillClass: 'bg-teal-100 text-teal-900 border-teal-200' },
-  emotions: { emoji: '😊', label: 'Emotions', pillClass: 'bg-yellow-100 text-yellow-900 border-yellow-200' },
-  clothing: { emoji: '🧥', label: 'Clothing', pillClass: 'bg-fuchsia-100 text-fuchsia-900 border-fuchsia-200' },
-  leisure: { emoji: '🎨', label: 'Leisure', pillClass: 'bg-purple-100 text-purple-900 border-purple-200' },
+  greetings: { emoji: '👋', label: 'Greetings', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  people: { emoji: '👥', label: 'People', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  home: { emoji: '🏠', label: 'Home', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  food: { emoji: '🥐', label: 'Food', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  shopping: { emoji: '🛍️', label: 'Shopping', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  travel: { emoji: '✈️', label: 'Travel', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  work: { emoji: '💼', label: 'Work', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  education: { emoji: '🎓', label: 'Education', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  health: { emoji: '❤️‍🩹', label: 'Health', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  nature: { emoji: '🌿', label: 'Nature', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  time: { emoji: '⏳', label: 'Time', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  places: { emoji: '📍', label: 'Places', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  emotions: { emoji: '😊', label: 'Emotions', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  clothing: { emoji: '🧥', label: 'Clothing', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  leisure: { emoji: '🎨', label: 'Leisure', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
   other: { emoji: '✨', label: 'Other', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
 };
 
@@ -165,7 +165,7 @@ export const LEVEL_STYLES: Record<CEFRLevel, LevelStyle> = {
 };
 
 export const ARTICLE_PILL_STYLES: Record<GermanArticle, string> = {
-  der: 'bg-[#dbeafe] text-[#1e40af] border-blue-200',
-  die: 'bg-[#fce7f3] text-[#9d174d] border-pink-200',
-  das: 'bg-[#dcfce7] text-[#166534] border-emerald-200',
+  der: 'bg-slate-200/70 text-slate-800 border-slate-300',
+  die: 'bg-slate-200/70 text-slate-800 border-slate-300',
+  das: 'bg-slate-200/70 text-slate-800 border-slate-300',
 };

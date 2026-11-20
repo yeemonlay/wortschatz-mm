@@ -119,15 +119,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           {/* Most Frequent */}
           <div
             onClick={() => onNavigate('flashcards')}
-            className="relative overflow-hidden rounded-2xl md:rounded-[28px] p-4 md:p-5 bg-gradient-to-br from-[#a855f7] via-[#9333ea] to-[#7e22ce] text-white cursor-pointer shadow-sm hover:shadow-md transition"
+            className="relative overflow-hidden rounded-2xl md:rounded-[28px] p-4 md:p-5 bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-800 text-white cursor-pointer shadow-sm hover:shadow-md transition"
           >
-            <span className="inline-flex items-center gap-1.5 bg-white text-purple-900 text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-2xs">
+            <span className="inline-flex items-center gap-1.5 bg-white text-indigo-900 text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-2xs">
               <span>🏆</span> Most Popular
             </span>
             <h3 className="text-base md:text-xl mt-2 md:mt-3 font-black">
               Top 100 Most Frequent
             </h3>
-            <p className="text-[11px] text-purple-100 mt-0.5">
+            <p className="text-[11px] text-indigo-100 mt-0.5">
               Master everyday conversation essentials first ({words.length} words in DB)
             </p>
           </div>
@@ -135,15 +135,15 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           {/* Der Die Das Article Drill */}
           <div
             onClick={() => onNavigate('quiz')}
-            className="relative overflow-hidden rounded-2xl md:rounded-[28px] p-4 md:p-5 bg-gradient-to-br from-[#fb7185] via-[#f43f5e] to-[#e11d48] text-white cursor-pointer shadow-sm hover:shadow-md transition"
+            className="relative overflow-hidden rounded-2xl md:rounded-[28px] p-4 md:p-5 bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 text-white cursor-pointer shadow-sm hover:shadow-md transition"
           >
-            <span className="inline-flex items-center gap-1.5 bg-white text-rose-900 text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-2xs">
+            <span className="inline-flex items-center gap-1.5 bg-white text-amber-900 text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-2xs">
               <span>🎯</span> Der • Die • Das
             </span>
             <h3 className="text-base md:text-xl mt-2 md:mt-3 font-black">
               Article Mastery Drill
             </h3>
-            <p className="text-[11px] text-rose-100 mt-0.5">
+            <p className="text-[11px] text-amber-100 mt-0.5">
               Practice noun genders with instant grammar hints ({nounCount} nouns in DB)
             </p>
           </div>

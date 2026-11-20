@@ -63,7 +63,13 @@ function getSmartDistractors(
   count: number = 3,
   globalPool?: VocabularyWord[]
 ): VocabularyWord[] {
-  const otherWords = pool.filter((w) => w.id !== targetWord.id && w.german.toLowerCase() !== targetWord.german.toLowerCase());
+  const otherWords = pool.filter(
+    (w) =>
+      w.id !== targetWord.id &&
+      w.german.toLowerCase() !== targetWord.german.toLowerCase() &&
+      w.type !== 'sentence' &&
+      w.english.length <= 45
+  );
 
   // Candidates with same category and same level
   const sameCatAndLevel = otherWords.filter(
@@ -217,7 +223,7 @@ export function generateSentenceQuestion(
   pool: VocabularyWord[],
   globalPool?: VocabularyWord[]
 ): QuizQuestion | null {
-  if (!targetWord.exampleGerman) {
+  if (!targetWord.exampleGerman || targetWord.exampleGerman.length > 55) {
     return null;
   }
 
@@ -304,8 +310,16 @@ export function createQuizSession(
     if (candidatePool.length === 0) {
       candidatePool = words.filter((w) => w.type === 'noun' && !!w.article);
     }
-  } else if (candidatePool.length < 4) {
-    candidatePool = words;
+  } else {
+    // Exclude long multi-line dialogue sentences from multiple-choice quizzes
+    candidatePool = levelFiltered.filter(
+      (w) => w.type !== 'sentence' && w.german.length <= 32 && w.english.length <= 40
+    );
+    if (candidatePool.length < 4) {
+      candidatePool = words.filter(
+        (w) => w.type !== 'sentence' && w.german.length <= 32 && w.english.length <= 40
+      );
+    }
   }
 
   const shuffledCandidates = shuffleArray(candidatePool);

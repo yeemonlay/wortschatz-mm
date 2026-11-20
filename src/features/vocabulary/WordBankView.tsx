@@ -24,7 +24,6 @@ import {
 import { subscribeToVocabulary, deleteVocabularyWord } from '@/services/vocabularyService';
 import { speakGerman } from '@/services/audioService';
 import { useNetworkStatus } from '@/hooks';
-import { cn } from '@/utils/cn';
 import { CustomSelect, CustomSelectOption } from '@/components/ui/CustomSelect';
 
 interface WordBankViewProps {
@@ -207,18 +206,13 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
         </div>
       )}
 
-      {/* Firestore Connection Error Banner */}
+      {/* Connection Warning Banner */}
       {firestoreError && (
-        <div className="mb-4 bg-rose-50 border border-rose-200 text-rose-900 p-4 rounded-2xl flex items-start gap-3 text-xs">
-          <AlertCircle className="w-5 h-5 text-rose-600 shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <h4 className="font-extrabold text-rose-800">
-              Cloud Firestore Read Blocked: {firestoreError}
-            </h4>
-            <p className="text-slate-600 leading-relaxed">
-              Your Firebase Firestore Security Rules are currently denying read access (missing or insufficient permissions). Please update your Security Rules in Firebase Console &rarr; Firestore Database &rarr; Rules to allow access.
-            </p>
-          </div>
+        <div className="mb-4 bg-amber-50 border border-amber-200 text-amber-900 p-3.5 rounded-2xl flex items-center gap-2.5 text-xs">
+          <AlertCircle className="w-4 h-4 text-amber-600 shrink-0" />
+          <p className="font-semibold text-amber-900">
+            Unable to load vocabulary right now. Please check your internet connection.
+          </p>
         </div>
       )}
 
@@ -333,26 +327,27 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
         {/* Mobile Vocabulary Cards */}
         <div className="space-y-2 pt-1">
           {loading ? (
-            <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 text-slate-400 text-xs">
-              Connecting directly to Cloud Firestore database...
+            <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 text-slate-500 text-xs flex flex-col items-center justify-center gap-2">
+              <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+              <span>Loading vocabulary...</span>
             </div>
           ) : firestoreError ? (
             <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 text-slate-500 text-xs space-y-2">
-              <AlertCircle className="w-6 h-6 text-rose-500 mx-auto" />
-              <p className="font-bold text-slate-800">Cannot Retrieve From Database</p>
-              <p className="text-[11px] text-slate-400">{firestoreError}</p>
+              <AlertCircle className="w-6 h-6 text-amber-500 mx-auto" />
+              <p className="font-bold text-slate-800">Unable to Load Vocabulary</p>
+              <p className="text-[11px] text-slate-400">Please check your connection and refresh.</p>
             </div>
           ) : words.length === 0 ? (
             <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 text-slate-500 text-xs space-y-2.5">
-              <Database className="w-6 h-6 text-amber-500 mx-auto" />
-              <p className="font-bold text-slate-800">Cloud Firestore 'vocabulary' is Empty</p>
-              <p className="text-[11px] text-slate-400">0 documents found in database collection.</p>
+              <Database className="w-6 h-6 text-slate-400 mx-auto" />
+              <p className="font-bold text-slate-800">No Vocabulary Entries Found</p>
+              <p className="text-[11px] text-slate-400">Your vocabulary list is currently empty.</p>
               {isAdmin && (
                 <button
                   onClick={onOpenImportExport}
                   className="px-3.5 py-1.5 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700"
                 >
-                  Import Words to Database
+                  Import Words
                 </button>
               )}
             </div>
@@ -577,26 +572,24 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
         {/* Desktop Vocabulary Rows */}
         <div className="space-y-2">
           {loading ? (
-            <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 text-slate-400 text-xs">
-              Connecting directly to Cloud Firestore database...
+            <div className="p-8 text-center bg-white rounded-2xl border border-slate-200 text-slate-500 text-xs flex flex-col items-center justify-center gap-2">
+              <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+              <span>Loading vocabulary...</span>
             </div>
           ) : firestoreError ? (
             <div className="p-10 text-center bg-white rounded-3xl border border-slate-200 shadow-2xs text-slate-600 text-xs space-y-2 max-w-md mx-auto">
-              <AlertCircle className="w-8 h-8 text-rose-500 mx-auto" />
-              <h3 className="text-sm font-black text-slate-900">Database Access Denied</h3>
+              <AlertCircle className="w-8 h-8 text-amber-500 mx-auto" />
+              <h3 className="text-sm font-black text-slate-900">Unable to Load Vocabulary</h3>
               <p className="text-slate-500 leading-relaxed">
-                Cloud Firestore rejected the query: <code className="text-rose-600 font-bold">{firestoreError}</code>.
-              </p>
-              <p className="text-[11px] text-slate-400">
-                Please update your Firebase Console Firestore Security Rules to allow read access.
+                We could not connect to the vocabulary service. Please check your internet connection and try again.
               </p>
             </div>
           ) : words.length === 0 ? (
             <div className="p-10 text-center bg-white rounded-3xl border border-slate-200 shadow-2xs text-slate-600 text-xs space-y-3 max-w-md mx-auto">
-              <Database className="w-8 h-8 text-amber-500 mx-auto" />
-              <h3 className="text-sm font-black text-slate-900">Cloud Firestore is Empty</h3>
+              <Database className="w-8 h-8 text-slate-400 mx-auto" />
+              <h3 className="text-sm font-black text-slate-900">No Vocabulary Entries Found</h3>
               <p className="text-slate-500 leading-relaxed">
-                There are currently 0 documents in your Cloud Firestore <code className="bg-slate-100 px-1.5 py-0.5 rounded font-bold">vocabulary</code> collection.
+                There are currently no words stored in your vocabulary list.
               </p>
               {isAdmin && (
                 <button
@@ -604,7 +597,7 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
                   className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-indigo-600 text-white text-xs font-bold hover:bg-indigo-700 shadow-xs cursor-pointer"
                 >
                   <Upload className="w-3.5 h-3.5" />
-                  <span>Import Vocabulary to Firestore</span>
+                  <span>Import Vocabulary</span>
                 </button>
               )}
             </div>
@@ -736,10 +729,12 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
       {showBackToTop && (
         <button
           onClick={scrollToTop}
-          className={cn(
-            'fixed right-5 z-30 p-3 rounded-full bg-indigo-600 text-white shadow-xl hover:bg-indigo-700 transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center border border-indigo-400/30 cursor-pointer',
-            isAdmin ? 'bottom-32 md:bottom-8' : 'bottom-20 md:bottom-8'
-          )}
+          style={{
+            bottom: isAdmin
+              ? 'calc(7.5rem + env(safe-area-inset-bottom, 0.5rem))'
+              : 'calc(4.5rem + env(safe-area-inset-bottom, 0.5rem))',
+          }}
+          className="fixed right-5 md:!bottom-8 z-30 p-3 rounded-full bg-indigo-600 text-white shadow-xl hover:bg-indigo-700 transition-all transform hover:scale-105 active:scale-95 flex items-center justify-center border border-indigo-400/30 cursor-pointer"
           title="Back to top"
           aria-label="Back to top"
         >

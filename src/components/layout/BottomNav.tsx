@@ -17,8 +17,11 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onSelectTab })
   ];
 
   return (
-    <div className="md:hidden fixed bottom-0 inset-x-0 z-40 px-3 pb-safe pt-1">
-      <nav className="max-w-md mx-auto mb-2 bg-white/95 backdrop-blur-md rounded-2xl border border-slate-200/90 shadow-lg px-2 py-1.5 flex items-center justify-around">
+    <nav
+      className="md:hidden fixed bottom-0 inset-x-0 z-40 w-full bg-white/95 backdrop-blur-md border-t border-slate-200/80 shadow-[0_-1px_3px_rgba(0,0,0,0.03)]"
+      style={{ paddingBottom: 'max(0.5rem, env(safe-area-inset-bottom, 0.5rem))' }}
+    >
+      <div className="max-w-md mx-auto flex items-center justify-around px-2 pt-2">
         {navItems.map((item) => {
           const Icon = item.icon;
           const isActive = currentTab === item.id;
@@ -27,18 +30,35 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onSelectTab })
               key={item.id}
               onClick={() => onSelectTab(item.id)}
               className={cn(
-                'flex-1 flex flex-col items-center gap-1 py-1.5 px-2 rounded-xl transition-all cursor-pointer',
-                isActive
-                  ? 'bg-indigo-600 text-white font-black shadow-xs'
-                  : 'text-slate-500 font-medium hover:text-slate-800'
+                'flex-1 flex flex-col items-center justify-center py-1 px-1 transition-all select-none cursor-pointer',
+                isActive ? 'text-indigo-600' : 'text-slate-400 hover:text-slate-600'
               )}
             >
-              <Icon className={cn('w-4 h-4 transition-transform', isActive && 'scale-105')} />
-              <span className="text-[11px] leading-tight tracking-tight">{item.label}</span>
+              <div
+                className={cn(
+                  'w-10 h-7 flex items-center justify-center rounded-full transition-all',
+                  isActive ? 'bg-indigo-50 text-indigo-600' : 'text-slate-400'
+                )}
+              >
+                <Icon
+                  className={cn(
+                    'w-5 h-5 transition-transform',
+                    isActive ? 'stroke-[2.5] scale-105' : 'stroke-[1.8]'
+                  )}
+                />
+              </div>
+              <span
+                className={cn(
+                  'text-[10px] leading-tight tracking-tight mt-0.5 transition-all',
+                  isActive ? 'font-bold text-indigo-600' : 'font-semibold text-slate-500'
+                )}
+              >
+                {item.label}
+              </span>
             </button>
           );
         })}
-      </nav>
-    </div>
+      </div>
+    </nav>
   );
 };

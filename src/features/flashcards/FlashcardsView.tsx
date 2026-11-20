@@ -283,8 +283,9 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           </div>
 
           {loading ? (
-            <div className="p-12 text-center bg-white rounded-3xl border border-slate-200 text-slate-400 text-xs font-semibold">
-              Loading vocabulary decks from Cloud Firestore...
+            <div className="p-12 text-center bg-white rounded-3xl border border-slate-200 text-slate-500 text-xs font-semibold flex flex-col items-center justify-center gap-2.5">
+              <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+              <span>Loading vocabulary...</span>
             </div>
           ) : (
             <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">

@@ -8,7 +8,6 @@ import {
   ArrowLeft,
   Flame,
   Play,
-  Lightbulb,
   Zap,
 } from 'lucide-react';
 import {
@@ -276,8 +275,9 @@ export const QuizView: React.FC<QuizViewProps> = ({
           <span className="text-xs font-bold text-slate-600 px-1">Select Quiz Challenge Mode</span>
 
           {loading ? (
-            <div className="p-12 text-center bg-white rounded-3xl border border-slate-200 text-slate-400 text-xs font-semibold">
-              Loading vocabulary from Cloud Firestore...
+            <div className="p-12 text-center bg-white rounded-3xl border border-slate-200 text-slate-500 text-xs font-semibold flex flex-col items-center justify-center gap-2.5">
+              <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+              <span>Loading vocabulary...</span>
             </div>
           ) : (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
@@ -418,24 +418,24 @@ export const QuizView: React.FC<QuizViewProps> = ({
     const getModeBadge = () => {
       switch (currentQuestion.type) {
         case 'articles':
-          return 'Choose the correct article (Der, Die, or Das)';
+          return 'DER, DIE OR DAS';
         case 'sentence':
-          return 'Fill in the blank';
+          return 'FILL IN THE BLANK';
         default:
-          return 'Choose the correct meaning';
+          return 'CHOOSE MEANING';
       }
     };
 
     return (
-      <div className="max-w-xl mx-auto space-y-4 md:space-y-5 animate-fadeIn pb-8">
+      <div className="max-w-xl mx-auto space-y-2.5 sm:space-y-3.5 animate-fadeIn pb-4">
         {/* Top Player Navigation Bar */}
         <div className="flex items-center justify-between text-xs font-bold text-slate-600">
           <button
             onClick={() => setViewMode('hub')}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-2xs transition cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-2xs transition cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Quit Quiz</span>
+            <span>Quiz</span>
           </button>
 
           <div className="flex items-center gap-2">
@@ -447,7 +447,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
               </span>
             )}
 
-            <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-black ${lvl.badgeBg} ${lvl.badgeText}`}>
+            <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${lvl.badgeBg} ${lvl.badgeText}`}>
               {currentQuestion.targetWord.level}
             </span>
 
@@ -472,45 +472,45 @@ export const QuizView: React.FC<QuizViewProps> = ({
         </div>
 
         {/* Question Header Card */}
-        <div className="bg-white rounded-[28px] border border-slate-200/90 shadow-sm p-6 sm:p-7 space-y-4 text-center">
-          <div className="flex items-center justify-center gap-2">
-            <span className="text-[10px] font-black tracking-widest text-indigo-600 uppercase bg-indigo-50 px-2.5 py-0.5 rounded-full border border-indigo-100">
+        <div className="bg-white rounded-2xl border border-slate-200/90 shadow-2xs p-3.5 sm:p-4 text-center space-y-1.5">
+          <div className="flex items-center justify-center">
+            <span className="text-[10px] font-black tracking-wider text-indigo-600 uppercase bg-indigo-50 px-2 py-0.5 rounded-full border border-indigo-100">
               {getModeBadge()}
             </span>
           </div>
 
-          <div className="space-y-2">
-            <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight leading-snug">
+          <div className="flex items-center justify-center gap-2">
+            <h2 className="text-xl sm:text-2xl font-black text-slate-900 tracking-tight leading-tight">
               {currentQuestion.prompt}
             </h2>
 
-            {currentQuestion.promptSub && (
-              <p className="text-xs sm:text-sm font-semibold text-slate-500">
-                {currentQuestion.promptSub}
-              </p>
+            {/* Inline Audio Button — No extra vertical row */}
+            {currentQuestion.promptAudioText && (
+              <button
+                type="button"
+                onClick={() => handleAudioPlay(currentQuestion.promptAudioText)}
+                className={`w-7 h-7 rounded-full flex items-center justify-center transition-all shrink-0 cursor-pointer ${
+                  audioPlaying
+                    ? 'bg-indigo-200 text-indigo-800 scale-110 shadow-xs'
+                    : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'
+                }`}
+                title="Listen German"
+                aria-label="Listen German"
+              >
+                <Volume2 className="w-3.5 h-3.5" />
+              </button>
             )}
           </div>
 
-          {/* Safe Audio Button (No answer spoilers) */}
-          {currentQuestion.promptAudioText && (
-            <div className="pt-1 flex justify-center">
-              <button
-                onClick={() => handleAudioPlay(currentQuestion.promptAudioText)}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-xs font-bold transition-all shadow-2xs cursor-pointer ${
-                  audioPlaying
-                    ? 'bg-indigo-100 text-indigo-800 scale-105'
-                    : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                }`}
-              >
-                <Volume2 className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Listen German</span>
-              </button>
-            </div>
+          {currentQuestion.promptSub && (
+            <p className="text-xs font-semibold text-slate-500">
+              {currentQuestion.promptSub}
+            </p>
           )}
         </div>
 
         {/* Full-Block Options Stack (One Per Line) */}
-        <div className="space-y-2.5">
+        <div className="space-y-2">
           {currentQuestion.options.map((option, optIdx) => {
             const letter = optionLetterLabels[optIdx] || String(optIdx + 1);
             const isSelected = selectedOptionId === option.id;
@@ -524,12 +524,12 @@ export const QuizView: React.FC<QuizViewProps> = ({
               if (isCorrect) {
                 // Correct option (highlighted in emerald)
                 cardStyle =
-                  'bg-emerald-50/90 border-emerald-500 text-emerald-950 shadow-sm ring-2 ring-emerald-500/20';
+                  'bg-emerald-50/90 border-emerald-500 text-emerald-950 shadow-sm ring-1 ring-emerald-500/20';
                 badgeStyle = 'bg-emerald-500 text-white border-emerald-600';
               } else if (isSelected && !isCorrect) {
                 // Selected wrong option (highlighted in rose)
                 cardStyle =
-                  'bg-rose-50/90 border-rose-500 text-rose-950 shadow-sm ring-2 ring-rose-500/20';
+                  'bg-rose-50/90 border-rose-500 text-rose-950 shadow-sm ring-1 ring-rose-500/20';
                 badgeStyle = 'bg-rose-500 text-white border-rose-600';
               } else {
                 // Dim other unselected incorrect options
@@ -543,23 +543,23 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 key={option.id}
                 disabled={isAnswerSubmitted}
                 onClick={() => handleSelectOption(option)}
-                className={`w-full py-4 px-4 sm:px-5 rounded-2xl border-2 text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${cardStyle}`}
+                className={`w-full py-3 sm:py-3.5 px-3.5 sm:px-4 rounded-xl border-2 text-left flex items-center justify-between gap-3 transition-all cursor-pointer ${cardStyle}`}
               >
-                <div className="flex items-center gap-3.5 min-w-0 flex-1">
+                <div className="flex items-center gap-3 min-w-0 flex-1">
                   {/* Letter badge: A, B, C, D */}
                   <span
-                    className={`w-8 h-8 rounded-xl font-black text-xs shrink-0 flex items-center justify-center border ${badgeStyle}`}
+                    className={`w-7 h-7 rounded-lg font-black text-xs shrink-0 flex items-center justify-center border ${badgeStyle}`}
                   >
                     {letter}
                   </span>
 
                   {/* Main Option Label + Sublabel */}
-                  <div className="min-w-0 flex-1">
-                    <div className="text-sm sm:text-base font-bold truncate">
+                  <div className="min-w-0 flex-1 py-0.5">
+                    <div className="text-sm font-bold">
                       {option.label}
                     </div>
                     {option.subLabel && (
-                      <div className="text-xs font-semibold text-amber-800/80 mt-0.5 truncate">
+                      <div className="text-xs font-semibold text-amber-800/90 mt-1 leading-normal">
                         {option.subLabel}
                       </div>
                     )}
@@ -570,9 +570,9 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 {isAnswerSubmitted && (
                   <div className="shrink-0">
                     {isCorrect ? (
-                      <CheckCircle2 className="w-5 h-5 text-emerald-600" />
+                      <CheckCircle2 className="w-4 h-4 text-emerald-600" />
                     ) : isSelected ? (
-                      <XCircle className="w-5 h-5 text-rose-600" />
+                      <XCircle className="w-4 h-4 text-rose-600" />
                     ) : null}
                   </div>
                 )}
@@ -581,9 +581,9 @@ export const QuizView: React.FC<QuizViewProps> = ({
           })}
         </div>
 
-        {/* Post-Answer Explanation Card & Next Button */}
+        {/* Post-Answer Result & Next Button */}
         {isAnswerSubmitted && (
-          <div className="bg-white rounded-3xl border border-slate-200 p-5 space-y-3.5 animate-fadeIn shadow-sm">
+          <div className="bg-white rounded-3xl border border-slate-200 p-4 space-y-3 animate-fadeIn shadow-sm">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 {selectedOptionId &&
@@ -605,34 +605,6 @@ export const QuizView: React.FC<QuizViewProps> = ({
                   <Zap className="w-3 h-3 fill-amber-500" />
                   <span>On Fire!</span>
                 </span>
-              )}
-            </div>
-
-            {/* Explanation & Grammar Details */}
-            <div className="p-3.5 rounded-2xl bg-slate-50 border border-slate-200/70 text-xs text-slate-700 space-y-2">
-              <div className="flex items-start gap-2">
-                <Lightbulb className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
-                <p className="leading-relaxed font-medium">
-                  {currentQuestion.explanation}
-                </p>
-              </div>
-
-              {/* Reveal full pronunciation after answer */}
-              {currentQuestion.explanationAudioText && (
-                <div className="pt-1 border-t border-slate-200/60 flex items-center">
-                  <button
-                    type="button"
-                    onClick={() => handleAudioPlay(currentQuestion.explanationAudioText)}
-                    className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-bold transition-all shadow-2xs cursor-pointer ${
-                      audioPlaying
-                        ? 'bg-indigo-100 text-indigo-800 scale-105'
-                        : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
-                    }`}
-                  >
-                    <Volume2 className="w-3.5 h-3.5 text-indigo-600" />
-                    <span>Listen full pronunciation</span>
-                  </button>
-                </div>
               )}
             </div>
 

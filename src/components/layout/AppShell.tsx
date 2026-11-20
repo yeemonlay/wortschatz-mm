@@ -52,7 +52,10 @@ export const AppShell: React.FC<AppShellProps> = ({
 
       {/* Mobile Floating Admin Actions (if admin is authenticated) */}
       {isAdmin && (
-        <div className="md:hidden fixed bottom-20 inset-x-4 flex items-center gap-2 z-30 max-w-md mx-auto">
+        <div
+          className="md:hidden fixed inset-x-4 flex items-center gap-2 z-30 max-w-md mx-auto"
+          style={{ bottom: 'calc(4.25rem + env(safe-area-inset-bottom, 0.5rem))' }}
+        >
           <button
             onClick={onOpenWordModal}
             className="flex-1 py-2.5 px-3 rounded-2xl bg-indigo-600/95 backdrop-blur-md text-white text-xs font-bold shadow-lg flex items-center justify-center gap-1.5 border border-indigo-400/30"

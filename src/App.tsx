@@ -80,7 +80,7 @@ export const App: React.FC = () => {
       case 'flashcards':
         return <FlashcardsView words={words} loading={wordsLoading} />;
       case 'quiz':
-        return <QuizView />;
+        return <QuizView words={words} loading={wordsLoading} />;
       default:
         return (
           <DashboardView

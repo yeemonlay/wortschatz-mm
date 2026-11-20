@@ -40,8 +40,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
     return words.filter((w) => w.level.toUpperCase() === lvl.toUpperCase()).length;
   };
 
-  const nounCount = words.filter((w) => w.type === 'noun').length;
-
   return (
     <div className="space-y-4 md:space-y-6 animate-fadeIn">
       {/* Header */}
@@ -104,50 +102,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
             </div>
           );
         })}
-      </div>
-
-      {/* Frequency Curated Decks (Matching Mock UI exactly) */}
-      <div>
-        <h2 className="text-base md:text-lg font-black text-slate-900 mb-0.5">
-          Frequency & Drill Sets
-        </h2>
-        <p className="text-[11px] text-slate-500 mb-2.5 md:mb-3.5">
-          Learn the most common words and article rules first
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5 md:gap-4">
-          {/* Most Frequent */}
-          <div
-            onClick={() => onNavigate('flashcards')}
-            className="relative overflow-hidden rounded-2xl md:rounded-[28px] p-4 md:p-5 bg-gradient-to-br from-indigo-600 via-indigo-700 to-indigo-800 text-white cursor-pointer shadow-sm hover:shadow-md transition"
-          >
-            <span className="inline-flex items-center gap-1.5 bg-white text-indigo-900 text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-2xs">
-              <span>🏆</span> Most Popular
-            </span>
-            <h3 className="text-base md:text-xl mt-2 md:mt-3 font-black">
-              Top 100 Most Frequent
-            </h3>
-            <p className="text-[11px] text-indigo-100 mt-0.5">
-              Master everyday conversation essentials first ({words.length} words in DB)
-            </p>
-          </div>
-
-          {/* Der Die Das Article Drill */}
-          <div
-            onClick={() => onNavigate('quiz')}
-            className="relative overflow-hidden rounded-2xl md:rounded-[28px] p-4 md:p-5 bg-gradient-to-br from-amber-500 via-amber-600 to-amber-700 text-white cursor-pointer shadow-sm hover:shadow-md transition"
-          >
-            <span className="inline-flex items-center gap-1.5 bg-white text-amber-900 text-[10px] font-black px-2.5 py-0.5 rounded-full shadow-2xs">
-              <span>🎯</span> Der • Die • Das
-            </span>
-            <h3 className="text-base md:text-xl mt-2 md:mt-3 font-black">
-              Article Mastery Drill
-            </h3>
-            <p className="text-[11px] text-amber-100 mt-0.5">
-              Practice noun genders with instant grammar hints ({nounCount} nouns in DB)
-            </p>
-          </div>
-        </div>
       </div>
     </div>
   );

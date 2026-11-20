@@ -24,7 +24,7 @@ export interface QuizQuestion {
 export interface QuizSessionConfig {
   level: string; // 'all' | 'a1' | 'a2' | etc.
   mode: QuizMode;
-  questionCount: number | 'all';
+  questionCount: number;
 }
 
 /**
@@ -60,7 +60,8 @@ export function formatGermanWordWithArticle(word: VocabularyWord): string {
 function getSmartDistractors(
   targetWord: VocabularyWord,
   pool: VocabularyWord[],
-  count: number = 3
+  count: number = 3,
+  globalPool?: VocabularyWord[]
 ): VocabularyWord[] {
   const otherWords = pool.filter((w) => w.id !== targetWord.id && w.german.toLowerCase() !== targetWord.german.toLowerCase());
 
@@ -95,6 +96,14 @@ function getSmartDistractors(
   if (selectedDistractors.length < count) tryAdd(sameCat);
   if (selectedDistractors.length < count) tryAdd(sameLevel);
   if (selectedDistractors.length < count) tryAdd(otherWords);
+
+  // If pool was small, pull additional distractors from globalPool
+  if (selectedDistractors.length < count && globalPool && globalPool.length > 0) {
+    const fallbackWords = globalPool.filter(
+      (w) => w.id !== targetWord.id && w.german.toLowerCase() !== targetWord.german.toLowerCase()
+    );
+    tryAdd(fallbackWords);
+  }
 
   return selectedDistractors;
 }
@@ -148,9 +157,10 @@ export function generateArticleQuestion(targetWord: VocabularyWord): QuizQuestio
  */
 export function generateMeaningQuestion(
   targetWord: VocabularyWord,
-  pool: VocabularyWord[]
+  pool: VocabularyWord[],
+  globalPool?: VocabularyWord[]
 ): QuizQuestion {
-  const distractors = getSmartDistractors(targetWord, pool, 3);
+  const distractors = getSmartDistractors(targetWord, pool, 3, globalPool);
 
   const correctOption: QuizOption = {
     id: `opt-correct-${targetWord.id}`,
@@ -204,7 +214,8 @@ export function generateMeaningQuestion(
  */
 export function generateSentenceQuestion(
   targetWord: VocabularyWord,
-  pool: VocabularyWord[]
+  pool: VocabularyWord[],
+  globalPool?: VocabularyWord[]
 ): QuizQuestion | null {
   if (!targetWord.exampleGerman) {
     return null;
@@ -233,7 +244,7 @@ export function generateSentenceQuestion(
     }
   }
 
-  const distractors = getSmartDistractors(targetWord, pool, 3);
+  const distractors = getSmartDistractors(targetWord, pool, 3, globalPool);
 
   const correctOption: QuizOption = {
     id: `opt-sentence-correct-${targetWord.id}`,
@@ -301,7 +312,7 @@ export function createQuizSession(
   const questions: QuizQuestion[] = [];
 
   for (const word of shuffledCandidates) {
-    if (config.questionCount !== 'all' && questions.length >= config.questionCount) {
+    if (questions.length >= config.questionCount) {
       break;
     }
 
@@ -310,24 +321,24 @@ export function createQuizSession(
         questions.push(generateArticleQuestion(word));
       }
     } else if (config.mode === 'sentence') {
-      const q = generateSentenceQuestion(word, candidatePool);
+      const q = generateSentenceQuestion(word, candidatePool, words);
       if (q) questions.push(q);
     } else if (config.mode === 'meaning') {
-      questions.push(generateMeaningQuestion(word, candidatePool));
+      questions.push(generateMeaningQuestion(word, candidatePool, words));
     } else {
       // Mixed mode: articles, sentence, or meaning
       const dice = Math.random();
       if (word.type === 'noun' && word.article && dice < 0.3) {
         questions.push(generateArticleQuestion(word));
       } else if (word.exampleGerman && dice < 0.65) {
-        const sentenceQ = generateSentenceQuestion(word, candidatePool);
+        const sentenceQ = generateSentenceQuestion(word, candidatePool, words);
         if (sentenceQ) {
           questions.push(sentenceQ);
           continue;
         }
-        questions.push(generateMeaningQuestion(word, candidatePool));
+        questions.push(generateMeaningQuestion(word, candidatePool, words));
       } else {
-        questions.push(generateMeaningQuestion(word, candidatePool));
+        questions.push(generateMeaningQuestion(word, candidatePool, words));
       }
     }
   }

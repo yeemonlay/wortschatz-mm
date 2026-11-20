@@ -26,21 +26,21 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
 
       <button
         onClick={onOpenAdminLogin}
-        className={`inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-extrabold border transition-all ${
+        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${
           isAdmin
             ? 'bg-amber-100 text-amber-900 border-amber-300'
-            : 'bg-slate-100 text-slate-600 border-slate-200'
+            : 'bg-white text-slate-600 border-slate-200 shadow-2xs hover:bg-slate-50'
         }`}
       >
         {isAdmin ? (
           <>
-            <Crown className="w-3 h-3 text-amber-600 fill-amber-500" />
+            <Crown className="w-3.5 h-3.5 text-amber-600 fill-amber-500" />
             <span>Admin</span>
           </>
         ) : (
           <>
-            <Lock className="w-3 h-3 text-slate-500" />
-            <span>Login</span>
+            <Lock className="w-3.5 h-3.5 text-slate-500" />
+            <span>Admin Login</span>
           </>
         )}
       </button>

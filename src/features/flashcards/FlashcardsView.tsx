@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  Sparkles,
   Volume2,
   Check,
   RotateCcw,
@@ -27,7 +26,7 @@ interface FlashcardsViewProps {
 }
 
 type ViewMode = 'hub' | 'playing' | 'summary';
-type SessionSize = 10 | 20 | 'all';
+type SessionSize = 15 | 30 | 50 | 100;
 
 export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   words: propWords,
@@ -55,7 +54,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   // View state machine
   const [viewMode, setViewMode] = useState<ViewMode>('hub');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
-  const [sessionSize, setSessionSize] = useState<SessionSize>(10);
+  const [sessionSize, setSessionSize] = useState<SessionSize>(15);
 
   // Active round state
   const [activeDeckTitle, setActiveDeckTitle] = useState('All Vocabulary');
@@ -88,7 +87,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
 
     // Shuffle pool
     const shuffled = [...pool].sort(() => Math.random() - 0.5);
-    const count = sessionSize === 'all' ? shuffled.length : Math.min(sessionSize, shuffled.length);
+    const count = Math.min(sessionSize, shuffled.length);
     const roundWords = shuffled.slice(0, count);
 
     setActiveDeckTitle(deckTitle);
@@ -172,10 +171,6 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
               Choose a topic deck to practice German active recall with bite-sized rounds
             </p>
           </div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-900 text-[10px] md:text-xs font-bold shadow-2xs self-start mt-0.5">
-            <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
-            <span>Active Recall</span>
-          </div>
         </div>
 
         {/* Configuration Bar: CEFR Filter & Session Size Selector */}
@@ -189,13 +184,13 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
             <div className="flex items-center gap-2 overflow-x-auto pt-2 pb-1.5 px-0.5 scrollbar-none">
               <button
                 onClick={() => setSelectedLevel('all')}
-                className={`px-3 py-1 rounded-full text-xs font-bold transition-all shrink-0 ${
+                className={`px-3 py-1 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer ${
                   selectedLevel === 'all'
                     ? 'bg-indigo-600 text-white shadow-2xs'
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
                 }`}
               >
-                All Levels
+                All
               </button>
               {CEFR_LEVELS_LIST.map((lvl) => {
                 const s = LEVEL_STYLES[lvl];
@@ -222,37 +217,20 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           {/* Session Size Selector */}
           <div className="pt-3.5 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <span className="text-xs font-bold text-slate-600">Round Size</span>
-            <div className="grid grid-cols-3 gap-1.5 bg-slate-100 p-1.5 rounded-2xl w-full sm:w-auto sm:min-w-[340px]">
-              <button
-                onClick={() => setSessionSize(10)}
-                className={`w-full py-2 px-1 text-center rounded-xl text-xs font-bold transition-all ${
-                  sessionSize === 10
-                    ? 'bg-white text-slate-900 shadow-2xs font-black'
-                    : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                10 Cards
-              </button>
-              <button
-                onClick={() => setSessionSize(20)}
-                className={`w-full py-2 px-1 text-center rounded-xl text-xs font-bold transition-all ${
-                  sessionSize === 20
-                    ? 'bg-white text-slate-900 shadow-2xs font-black'
-                    : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                20 Cards
-              </button>
-              <button
-                onClick={() => setSessionSize('all')}
-                className={`w-full py-2 px-1 text-center rounded-xl text-xs font-bold transition-all ${
-                  sessionSize === 'all'
-                    ? 'bg-white text-slate-900 shadow-2xs font-black'
-                    : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                All Cards
-              </button>
+            <div className="grid grid-cols-4 gap-1.5 bg-slate-100 p-1.5 rounded-2xl w-full sm:w-auto sm:min-w-[280px]">
+              {([15, 30, 50, 100] as const).map((size) => (
+                <button
+                  key={size}
+                  onClick={() => setSessionSize(size)}
+                  className={`w-full py-2 px-1 text-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    sessionSize === size
+                      ? 'bg-indigo-600 text-white shadow-xs font-black'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -286,7 +264,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           </p>
           <div className="mt-4 flex items-center justify-between pt-2.5 border-t border-amber-200/60">
             <span className="text-[11px] font-semibold text-slate-500">
-              Round: {sessionSize === 'all' ? totalLevelWords : Math.min(sessionSize, totalLevelWords)} cards
+              Round: {Math.min(sessionSize, totalLevelWords)} cards
             </span>
             <span className="inline-flex items-center gap-1 text-xs font-black text-amber-900 group-hover:translate-x-1 transition-transform">
               <span>Start Round</span>

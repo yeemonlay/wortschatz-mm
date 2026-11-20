@@ -308,7 +308,7 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
                 selectedLevel === 'all' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-500'
               }`}
             >
-              ALL
+              All
             </button>
             {CEFR_LEVELS_LIST.map((lvl) => {
               const s = LEVEL_STYLES[lvl];

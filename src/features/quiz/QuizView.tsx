@@ -31,7 +31,7 @@ interface QuizViewProps {
 }
 
 type ViewMode = 'hub' | 'playing' | 'summary';
-type SessionSize = 10 | 20 | 'all';
+type SessionSize = 15 | 30 | 50 | 100;
 
 export const QuizView: React.FC<QuizViewProps> = ({
   words: propWords,
@@ -60,7 +60,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
   const [viewMode, setViewMode] = useState<ViewMode>('hub');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
   const [selectedMode, setSelectedMode] = useState<QuizMode>('mixed');
-  const [sessionSize, setSessionSize] = useState<SessionSize>(10);
+  const [sessionSize, setSessionSize] = useState<SessionSize>(15);
 
   // Active quiz session state
   const [questionQueue, setQuestionQueue] = useState<QuizQuestion[]>([]);
@@ -207,10 +207,6 @@ export const QuizView: React.FC<QuizViewProps> = ({
               Test and master German vocabulary with full-block multiple-choice challenges
             </p>
           </div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-indigo-100 text-indigo-900 text-[10px] md:text-xs font-bold shadow-2xs self-start mt-0.5">
-            <Award className="w-3.5 h-3.5 text-indigo-600" />
-            <span>Mastery Assessment</span>
-          </div>
         </div>
 
         {/* Configuration Bar: CEFR Filter & Session Size Selector */}
@@ -230,7 +226,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
                 }`}
               >
-                All Levels
+                All
               </button>
               {CEFR_LEVELS_LIST.map((lvl) => {
                 const s = LEVEL_STYLES[lvl];
@@ -257,37 +253,20 @@ export const QuizView: React.FC<QuizViewProps> = ({
           {/* Session Size Selector */}
           <div className="pt-3.5 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <span className="text-xs font-bold text-slate-600">Round Size</span>
-            <div className="grid grid-cols-3 gap-1.5 bg-slate-100 p-1.5 rounded-2xl w-full sm:w-auto sm:min-w-[340px]">
-              <button
-                onClick={() => setSessionSize(10)}
-                className={`w-full py-2 px-1 text-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  sessionSize === 10
-                    ? 'bg-white text-slate-900 shadow-2xs font-black'
-                    : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                10 Questions
-              </button>
-              <button
-                onClick={() => setSessionSize(20)}
-                className={`w-full py-2 px-1 text-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  sessionSize === 20
-                    ? 'bg-white text-slate-900 shadow-2xs font-black'
-                    : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                20 Questions
-              </button>
-              <button
-                onClick={() => setSessionSize('all')}
-                className={`w-full py-2 px-1 text-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                  sessionSize === 'all'
-                    ? 'bg-white text-slate-900 shadow-2xs font-black'
-                    : 'text-slate-500 hover:text-slate-900'
-                }`}
-              >
-                All Available
-              </button>
+            <div className="grid grid-cols-4 gap-1.5 bg-slate-100 p-1.5 rounded-2xl w-full sm:w-auto sm:min-w-[280px]">
+              {([15, 30, 50, 100] as const).map((size) => (
+                <button
+                  key={size}
+                  onClick={() => setSessionSize(size)}
+                  className={`w-full py-2 px-1 text-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
+                    sessionSize === size
+                      ? 'bg-indigo-600 text-white shadow-xs font-black'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  {size}
+                </button>
+              ))}
             </div>
           </div>
         </div>
@@ -308,18 +287,14 @@ export const QuizView: React.FC<QuizViewProps> = ({
                   setSelectedMode('articles');
                   startQuiz('articles');
                 }}
-                className={`p-5 rounded-3xl border text-left flex flex-col justify-between transition-all select-none cursor-pointer group ${
-                  selectedMode === 'articles'
-                    ? 'bg-gradient-to-br from-indigo-50/90 via-white to-indigo-100/40 border-indigo-300 shadow-sm'
-                    : 'bg-white border-slate-200/80 shadow-2xs hover:border-indigo-300 hover:-translate-y-0.5'
-                }`}
+                className="p-5 rounded-3xl border border-slate-200/80 bg-white shadow-2xs hover:shadow-sm hover:border-indigo-300 hover:-translate-y-0.5 text-left flex flex-col justify-between transition-all select-none cursor-pointer group"
               >
                 <div className="space-y-2.5">
                   <div className="flex items-center justify-between">
-                    <div className="w-11 h-11 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-2xl shadow-2xs">
+                    <div className="w-11 h-11 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-2xl shadow-2xs">
                       👑
                     </div>
-                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-900">
+                    <span className="text-[10px] font-black px-2 py-0.5 rounded-full bg-slate-100 text-slate-700">
                       {nounWordsCount} Nouns
                     </span>
                   </div>
@@ -345,14 +320,10 @@ export const QuizView: React.FC<QuizViewProps> = ({
                   setSelectedMode('meaning');
                   startQuiz('meaning');
                 }}
-                className={`p-5 rounded-3xl border text-left flex flex-col justify-between transition-all select-none cursor-pointer group ${
-                  selectedMode === 'meaning'
-                    ? 'bg-gradient-to-br from-indigo-50/90 via-white to-indigo-100/40 border-indigo-300 shadow-sm'
-                    : 'bg-white border-slate-200/80 shadow-2xs hover:border-indigo-300 hover:-translate-y-0.5'
-                }`}
+                className="p-5 rounded-3xl border border-slate-200/80 bg-white shadow-2xs hover:shadow-sm hover:border-indigo-300 hover:-translate-y-0.5 text-left flex flex-col justify-between transition-all select-none cursor-pointer group"
               >
                 <div className="space-y-2.5">
-                  <div className="w-11 h-11 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-2xl shadow-2xs">
+                  <div className="w-11 h-11 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-2xl shadow-2xs">
                     🎯
                   </div>
                   <div>
@@ -377,14 +348,10 @@ export const QuizView: React.FC<QuizViewProps> = ({
                   setSelectedMode('sentence');
                   startQuiz('sentence');
                 }}
-                className={`p-5 rounded-3xl border text-left flex flex-col justify-between transition-all select-none cursor-pointer group ${
-                  selectedMode === 'sentence'
-                    ? 'bg-gradient-to-br from-indigo-50/90 via-white to-indigo-100/40 border-indigo-300 shadow-sm'
-                    : 'bg-white border-slate-200/80 shadow-2xs hover:border-indigo-300 hover:-translate-y-0.5'
-                }`}
+                className="p-5 rounded-3xl border border-slate-200/80 bg-white shadow-2xs hover:shadow-sm hover:border-indigo-300 hover:-translate-y-0.5 text-left flex flex-col justify-between transition-all select-none cursor-pointer group"
               >
                 <div className="space-y-2.5">
-                  <div className="w-11 h-11 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-2xl shadow-2xs">
+                  <div className="w-11 h-11 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-2xl shadow-2xs">
                     🧩
                   </div>
                   <div>
@@ -409,14 +376,10 @@ export const QuizView: React.FC<QuizViewProps> = ({
                   setSelectedMode('mixed');
                   startQuiz('mixed');
                 }}
-                className={`p-5 rounded-3xl border text-left flex flex-col justify-between transition-all select-none cursor-pointer group ${
-                  selectedMode === 'mixed'
-                    ? 'bg-gradient-to-br from-indigo-50/90 via-white to-indigo-100/40 border-indigo-300 shadow-sm'
-                    : 'bg-white border-slate-200/80 shadow-2xs hover:border-indigo-300 hover:-translate-y-0.5'
-                }`}
+                className="p-5 rounded-3xl border border-slate-200/80 bg-white shadow-2xs hover:shadow-sm hover:border-indigo-300 hover:-translate-y-0.5 text-left flex flex-col justify-between transition-all select-none cursor-pointer group"
               >
                 <div className="space-y-2.5">
-                  <div className="w-11 h-11 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-2xl shadow-2xs">
+                  <div className="w-11 h-11 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-2xl shadow-2xs">
                     🎲
                   </div>
                   <div>

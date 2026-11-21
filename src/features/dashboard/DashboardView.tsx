@@ -58,10 +58,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
           const meta = LEVEL_STYLES[lvl];
           const dbCount = getCountForLevel(lvl);
 
-          // Calculate visual progress bar based on live DB count vs curriculum target
-          const targetCount = meta.count || 500;
-          const progressPercent = dbCount > 0 ? Math.min(100, Math.max(8, Math.round((dbCount / targetCount) * 100))) : 0;
-
           return (
             <div
               key={lvl}
@@ -87,17 +83,6 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                 <div className="hidden md:flex w-10 h-10 rounded-2xl bg-white/85 items-center justify-center text-slate-900 shadow-xs group-hover:scale-105 transition shrink-0">
                   <Play className="w-4 h-4 fill-slate-900 ml-0.5" />
                 </div>
-              </div>
-
-              {/* Progress Bar */}
-              <div className="relative z-10 mt-3 md:mt-4 h-1.5 w-full bg-black/10 rounded-full overflow-hidden">
-                <div
-                  className="h-full rounded-full transition-all duration-500"
-                  style={{
-                    width: `${progressPercent}%`,
-                    backgroundColor: meta.accent,
-                  }}
-                />
               </div>
             </div>
           );

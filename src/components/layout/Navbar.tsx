@@ -47,7 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             <div className="flex items-center gap-2">
               <span className="font-black text-lg tracking-tight text-slate-900">Wortschatz</span>
               <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200">
-                DE
+                MM
               </span>
             </div>
           </div>
@@ -76,24 +76,28 @@ export const Navbar: React.FC<NavbarProps> = ({
           </nav>
         </div>
 
-        {/* Desktop Admin Controls (Matching Mock UI exactly) */}
+        {/* Desktop Admin Controls */}
         <div className="flex items-center gap-2.5">
           {isAdmin ? (
             <div className="flex items-center gap-2">
-              <button
-                onClick={onOpenImportExport}
-                className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-extrabold border border-slate-200 bg-white text-slate-800 hover:bg-slate-50 transition shadow-2xs"
-              >
-                <Upload className="w-3.5 h-3.5 text-indigo-600" />
-                <span>Import/Export</span>
-              </button>
-              <button
-                onClick={onOpenWordModal}
-                className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-extrabold bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-xs"
-              >
-                <Plus className="w-3.5 h-3.5" />
-                <span>Add New</span>
-              </button>
+              {currentTab === 'dictionary' && (
+                <>
+                  <button
+                    onClick={onOpenImportExport}
+                    className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-2xl text-xs font-extrabold border border-slate-200 bg-white text-slate-800 hover:bg-slate-50 transition shadow-2xs"
+                  >
+                    <Upload className="w-3.5 h-3.5 text-indigo-600" />
+                    <span>Import/Export</span>
+                  </button>
+                  <button
+                    onClick={onOpenWordModal}
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-extrabold bg-indigo-600 text-white hover:bg-indigo-700 transition shadow-xs"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>Add Word</span>
+                  </button>
+                </>
+              )}
               <button
                 onClick={onOpenAdminLogin}
                 className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-100 text-amber-900 text-xs font-extrabold border border-amber-300"

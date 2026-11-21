@@ -6,12 +6,9 @@ import {
   Download,
   AlertCircle,
   CheckCircle2,
-  FileText,
-  Sparkles,
 } from 'lucide-react';
 import { VocabularyWord, CEFRLevel, VocabularyCategory, WordType } from '@/types';
 import { batchImportVocabulary, getVocabularyList } from '@/services/vocabularyService';
-import initialVocabularyData from '@/database/initialVocabulary.json';
 import { cn } from '@/utils/cn';
 
 interface ImportExportModalProps {
@@ -37,59 +34,24 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
   const [loading, setLoading] = useState(false);
   const [importStatus, setImportStatus] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [rawText, setRawText] = useState('');
-  const [showPasteArea, setShowPasteArea] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   if (!isOpen) return null;
 
-  // Parse raw JSON or CSV into partial vocabulary objects
-  const parseData = async (content: string, type: 'json' | 'csv') => {
+  // Parse raw JSON into partial vocabulary objects
+  const parseData = async (content: string) => {
     setError(null);
     setImportStatus(null);
     let parsed: Partial<VocabularyWord>[] = [];
 
     try {
-      if (type === 'json') {
-        const data = JSON.parse(content);
-        if (Array.isArray(data)) {
-          parsed = data;
-        } else if (data.words && Array.isArray(data.words)) {
-          parsed = data.words;
-        } else {
-          throw new Error('JSON must be an array of vocabulary entries.');
-        }
+      const data = JSON.parse(content);
+      if (Array.isArray(data)) {
+        parsed = data;
+      } else if (data.words && Array.isArray(data.words)) {
+        parsed = data.words;
       } else {
-        // Simple CSV parser
-        const lines = content.split(/\r?\n/).filter((l) => l.trim().length > 0);
-        if (lines.length < 2) throw new Error('CSV must contain a header and at least one row.');
-
-        const headers = lines[0].split(',').map((h) => h.trim().toLowerCase().replace(/^["']|["']$/g, ''));
-        
-        parsed = lines.slice(1).map((line) => {
-          // Match commas outside quotes
-          const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map((v) =>
-            v.trim().replace(/^["']|["']$/g, '')
-          );
-          const obj: any = {};
-          headers.forEach((h, i) => {
-            if (cols[i] !== undefined) {
-              if (h === 'german' || h === 'word') obj.german = cols[i];
-              else if (h === 'english' || h === 'translation') obj.english = cols[i];
-              else if (h === 'myanmar' || h === 'burmese') obj.myanmar = cols[i];
-              else if (h === 'type' || h === 'wordtype') obj.type = cols[i] as WordType;
-              else if (h === 'article' || h === 'gender') obj.article = cols[i];
-              else if (h === 'plural') obj.plural = cols[i];
-              else if (h === 'level' || h === 'cefr') obj.level = cols[i] as CEFRLevel;
-              else if (h === 'category') obj.category = cols[i] as VocabularyCategory;
-              else if (h === 'example' || h === 'examplegerman') obj.exampleGerman = cols[i];
-              else if (h === 'exampleenglish') obj.exampleEnglish = cols[i];
-              else if (h === 'examplemyanmar') obj.exampleMyanmar = cols[i];
-              else if (h === 'remark') obj.remark = cols[i];
-            }
-          });
-          return obj;
-        });
+        throw new Error('JSON must be an array of vocabulary entries.');
       }
 
       // Validate against current DB entries for duplicate detection
@@ -106,7 +68,7 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
             ...item,
             level: (item.level || 'A1') as CEFRLevel,
             category: (item.category || 'other') as VocabularyCategory,
-            type: (item.type || 'noun') as WordType,
+            type: (item.type === 'phrase' ? 'sentence' : (item.type || 'noun')) as WordType,
           },
           status: isDup ? 'duplicate' : hasFallback ? 'fallback' : 'new',
           reason: isDup
@@ -119,7 +81,7 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
 
       setStagedEntries(staged);
     } catch (err: any) {
-      setError(err.message || 'Failed to parse file.');
+      setError(err.message || 'Failed to parse JSON.');
       setStagedEntries([]);
     }
   };
@@ -128,26 +90,17 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const isCsv = file.name.endsWith('.csv');
-    const isJson = file.name.endsWith('.json');
-
-    if (!isCsv && !isJson) {
-      setError('Please select a valid .json or .csv file.');
+    if (!file.name.endsWith('.json')) {
+      setError('Please select a valid .json file.');
       return;
     }
 
     const reader = new FileReader();
     reader.onload = (event) => {
       const content = event.target?.result as string;
-      parseData(content, isJson ? 'json' : 'csv');
+      parseData(content);
     };
     reader.readAsText(file);
-  };
-
-  const handleTextParse = () => {
-    if (!rawText.trim()) return;
-    const isJson = rawText.trim().startsWith('[') || rawText.trim().startsWith('{');
-    parseData(rawText, isJson ? 'json' : 'csv');
   };
 
   const handleCommitImport = async () => {
@@ -162,7 +115,6 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
         `Batch commit successful: ${res.added} added, ${res.updated} updated, ${res.skipped} skipped.`
       );
       setStagedEntries([]);
-      setRawText('');
       if (onImportComplete) onImportComplete();
     } catch (err: any) {
       setError(err.message || 'Batch commit failed.');
@@ -203,12 +155,7 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
       <div className="bg-white rounded-[32px] max-w-2xl w-full p-6 sm:p-7 shadow-2xl border border-slate-200 space-y-5 max-h-[90vh] overflow-y-auto">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div>
-            <h2 className="text-xl font-black text-slate-900">In-App Import / Export (Option B)</h2>
-            <p className="text-xs text-slate-500">
-              Atomic batch write to Cloud Firestore with duplicate detection
-            </p>
-          </div>
+          <h2 className="text-xl font-black text-slate-900">Import/Export</h2>
           <button
             onClick={onClose}
             className="p-2 rounded-full bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors"
@@ -228,7 +175,7 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
                 : 'text-slate-500 hover:text-slate-900'
             )}
           >
-            Import & Validate (.JSON / .CSV)
+            Import (JSON)
           </button>
           <button
             onClick={() => setActiveTab('export')}
@@ -239,7 +186,7 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
                 : 'text-slate-500 hover:text-slate-900'
             )}
           >
-            One-Click JSON Backup
+            Export (JSON)
           </button>
         </div>
 
@@ -267,7 +214,7 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
               <input
                 ref={fileInputRef}
                 type="file"
-                accept=".json,.csv"
+                accept=".json"
                 className="hidden"
                 onChange={handleFileChange}
               />
@@ -275,64 +222,11 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
                 <UploadCloud className="w-5 h-5" />
               </div>
               <p className="text-xs font-bold text-slate-800">
-                Click to browse or drop <span className="text-indigo-600">.json</span> /{' '}
-                <span className="text-indigo-600">.csv</span> file
-              </p>
-              <p className="text-[11px] text-slate-500">
-                Missing level defaults to <strong>'A1'</strong> • Missing category defaults to{' '}
-                <strong>'other'</strong>
+                Click to browse or drop <span className="text-indigo-600">.json</span> file
               </p>
             </div>
 
-            {/* Quick Load Goethe A1 Dataset & Paste Raw JSON/CSV Toggle */}
-            <div className="flex items-center justify-between flex-wrap gap-2">
-              <button
-                type="button"
-                onClick={() => {
-                  setStagedEntries(
-                    (initialVocabularyData as VocabularyWord[]).map((w) => ({
-                      raw: w,
-                      status: 'new',
-                    }))
-                  );
-                  setImportStatus('Loaded 376 Goethe A1 items from populated dataset ready to commit.');
-                }}
-                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-100 hover:bg-amber-200 text-amber-900 text-xs font-bold transition-all border border-amber-300 shadow-2xs"
-              >
-                <Sparkles className="w-3.5 h-3.5 text-amber-700" />
-                <span>Quick-Load Goethe A1 (376 Words)</span>
-              </button>
-
-              <button
-                type="button"
-                onClick={() => setShowPasteArea(!showPasteArea)}
-                className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1"
-              >
-                <FileText className="w-3.5 h-3.5" />
-                <span>{showPasteArea ? 'Hide Paste Area' : 'Or Paste JSON / CSV Directly'}</span>
-              </button>
-            </div>
-
-            {showPasteArea && (
-              <div className="space-y-2">
-                <textarea
-                  rows={4}
-                  value={rawText}
-                  onChange={(e) => setRawText(e.target.value)}
-                  placeholder={`[{"german": "der Hund", "english": "dog", "myanmar": "ခွေး", "level": "A1", "category": "nature"}]`}
-                  className="w-full p-3 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-mono text-slate-800"
-                />
-                <button
-                  type="button"
-                  onClick={handleTextParse}
-                  className="px-4 py-1.5 rounded-xl bg-slate-800 text-white text-xs font-bold hover:bg-slate-700"
-                >
-                  Parse & Stage
-                </button>
-              </div>
-            )}
-
-            {/* Validation Stats */}
+            {/* Validation Stats & Preview */}
             {stagedEntries.length > 0 && (
               <>
                 <div className="grid grid-cols-4 gap-2.5">
@@ -432,7 +326,7 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
                     disabled={loading}
                     className="px-5 py-2.5 rounded-2xl text-xs font-extrabold bg-indigo-600 text-white hover:bg-indigo-700 shadow-xs cursor-pointer"
                   >
-                    {loading ? 'Writing to Firestore...' : 'Commit Batch Write to Firestore'}
+                    {loading ? 'Importing words...' : 'Import Words'}
                   </button>
                 </div>
               </>
@@ -445,12 +339,8 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
               <FileJson className="w-7 h-7" />
             </div>
             <div>
-              <h3 className="text-base font-extrabold text-slate-900">
-                One-Click JSON Database Backup
-              </h3>
-              <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                Exports all vocabulary items (nouns, verbs, adjectives, sentences) with their CEFR
-                levels, 16 categories, and dual Myanmar & English translations.
+              <p className="text-xs font-bold text-slate-700">
+                Export all vocabulary items
               </p>
             </div>
             <button
@@ -459,7 +349,7 @@ export const ImportExportModal: React.FC<ImportExportModalProps> = ({
               className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-indigo-600 text-white text-xs font-extrabold hover:bg-indigo-700 shadow-xs cursor-pointer"
             >
               <Download className="w-4 h-4" />
-              <span>{loading ? 'Preparing Snapshot...' : 'Download JSON Snapshot'}</span>
+              <span>{loading ? 'Exporting...' : 'Download JSON'}</span>
             </button>
           </div>
         )}

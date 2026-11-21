@@ -50,8 +50,8 @@ export const AppShell: React.FC<AppShellProps> = ({
         {children}
       </main>
 
-      {/* Mobile Floating Admin Actions (if admin is authenticated) */}
-      {isAdmin && (
+      {/* Mobile Floating Admin Actions (Word Bank screen only) */}
+      {isAdmin && currentTab === 'dictionary' && (
         <div
           className="md:hidden fixed inset-x-4 flex items-center gap-2 z-30 max-w-md mx-auto"
           style={{ bottom: 'calc(4.25rem + env(safe-area-inset-bottom, 0.5rem))' }}

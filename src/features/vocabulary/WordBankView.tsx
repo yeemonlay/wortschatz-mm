@@ -221,7 +221,10 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
           ======================================================== */}
       <div className="md:hidden space-y-3">
         {/* Mobile Sticky Filter Panel */}
-        <div className="sticky top-[56px] z-20 -mx-4 px-4 pt-0 pb-2.5 bg-[#f8f7f4]/95 backdrop-blur-md border-b border-slate-200/60 shadow-2xs space-y-2.5 transition-all">
+        <div
+          className="sticky z-20 -mx-4 px-4 pt-1.5 pb-2.5 bg-[#f8f7f4]/95 backdrop-blur-md border-b border-slate-200/60 shadow-2xs space-y-2.5 transition-all"
+          style={{ top: 'calc(3.75rem + env(safe-area-inset-top, 0px))' }}
+        >
           {/* Mobile Header Bar */}
           <div className="flex items-center justify-between">
             <div>
@@ -251,7 +254,7 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search words..."
-              className="w-full pl-9 pr-8 py-2 bg-white border border-slate-200/90 rounded-2xl text-xs font-semibold placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
+              className="w-full pl-9 pr-8 py-2 bg-white border border-slate-200/90 rounded-2xl text-base sm:text-xs font-semibold placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
             />
             {searchQuery && (
               <button

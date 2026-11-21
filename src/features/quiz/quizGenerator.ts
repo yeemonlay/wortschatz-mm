@@ -50,12 +50,25 @@ export function formatGermanWordWithArticle(word: VocabularyWord): string {
 }
 
 /**
- * Selects 3 smart distractors from the vocabulary pool.
- * Preference order:
- * 1. Same category and same level
- * 2. Same category
- * 3. Same level
- * 4. Any other words in pool
+ * Selects smart distractors from the vocabulary pool.
+ *
+ * Part-of-speech enforcement:
+ * If targetWord is a verb, all distractors must be verbs.
+ * If targetWord is a noun, all distractors must be nouns.
+ * If targetWord is an adjective, all distractors must be adjectives.
+ *
+ * Preference hierarchy:
+ * 1. Strict same part of speech (verb -> verbs, noun -> nouns, etc.):
+ *    a. Same POS + same category + same level
+ *    b. Same POS + same category
+ *    c. Same POS + same level
+ *    d. Same POS from active pool
+ *    e. Same POS from global pool (cross-level if needed)
+ * 2. Graceful fallback (only if total database words of this POS < count):
+ *    a. Same category and level
+ *    b. Same category
+ *    c. Same level
+ *    d. Any other valid word
  */
 function getSmartDistractors(
   targetWord: VocabularyWord,
@@ -63,26 +76,17 @@ function getSmartDistractors(
   count: number = 3,
   globalPool?: VocabularyWord[]
 ): VocabularyWord[] {
-  const otherWords = pool.filter(
-    (w) =>
-      w.id !== targetWord.id &&
-      w.german.toLowerCase() !== targetWord.german.toLowerCase() &&
-      w.type !== 'sentence' &&
-      w.english.length <= 45
-  );
+  const targetType = targetWord.type;
 
-  // Candidates with same category and same level
-  const sameCatAndLevel = otherWords.filter(
-    (w) => w.category === targetWord.category && w.level.toLowerCase() === targetWord.level.toLowerCase()
-  );
+  const isValidCandidate = (w: VocabularyWord): boolean =>
+    w.id !== targetWord.id &&
+    w.german.trim().toLowerCase() !== targetWord.german.trim().toLowerCase() &&
+    w.english.trim().toLowerCase() !== targetWord.english.trim().toLowerCase() &&
+    w.type !== 'sentence' &&
+    w.english.length <= 45;
 
-  // Candidates with same category
-  const sameCat = otherWords.filter((w) => w.category === targetWord.category);
-
-  // Candidates with same level
-  const sameLevel = otherWords.filter(
-    (w) => w.level.toLowerCase() === targetWord.level.toLowerCase()
-  );
+  const activeCandidates = pool.filter(isValidCandidate);
+  const globalCandidates = (globalPool || []).filter(isValidCandidate);
 
   const selectedDistractors: VocabularyWord[] = [];
   const selectedIds = new Set<string>();
@@ -98,17 +102,34 @@ function getSmartDistractors(
     }
   };
 
-  tryAdd(sameCatAndLevel);
-  if (selectedDistractors.length < count) tryAdd(sameCat);
-  if (selectedDistractors.length < count) tryAdd(sameLevel);
-  if (selectedDistractors.length < count) tryAdd(otherWords);
+  // Step 1: Prioritize matching the exact same part of speech (verb -> verbs, noun -> nouns, etc.)
+  if (targetType) {
+    const sameTypeActive = activeCandidates.filter((w) => w.type === targetType);
+    const sameTypeGlobal = globalCandidates.filter((w) => w.type === targetType);
 
-  // If pool was small, pull additional distractors from globalPool
-  if (selectedDistractors.length < count && globalPool && globalPool.length > 0) {
-    const fallbackWords = globalPool.filter(
-      (w) => w.id !== targetWord.id && w.german.toLowerCase() !== targetWord.german.toLowerCase()
-    );
-    tryAdd(fallbackWords);
+    // Try from active pool first
+    tryAdd(sameTypeActive.filter((w) => w.category === targetWord.category && w.level.toLowerCase() === targetWord.level.toLowerCase()));
+    if (selectedDistractors.length < count) tryAdd(sameTypeActive.filter((w) => w.category === targetWord.category));
+    if (selectedDistractors.length < count) tryAdd(sameTypeActive.filter((w) => w.level.toLowerCase() === targetWord.level.toLowerCase()));
+    if (selectedDistractors.length < count) tryAdd(sameTypeActive);
+
+    // If active pool doesn't have enough words of the same POS (e.g. fewer than 3 verbs in current level/category),
+    // pull from the global vocabulary pool so options REMAIN verbs/nouns/adjectives!
+    if (selectedDistractors.length < count) {
+      tryAdd(sameTypeGlobal.filter((w) => w.category === targetWord.category && w.level.toLowerCase() === targetWord.level.toLowerCase()));
+      if (selectedDistractors.length < count) tryAdd(sameTypeGlobal.filter((w) => w.category === targetWord.category));
+      if (selectedDistractors.length < count) tryAdd(sameTypeGlobal.filter((w) => w.level.toLowerCase() === targetWord.level.toLowerCase()));
+      if (selectedDistractors.length < count) tryAdd(sameTypeGlobal);
+    }
+  }
+
+  // Step 2: Graceful fallback ONLY if the entire database has fewer than `count` words of this part of speech
+  if (selectedDistractors.length < count) {
+    tryAdd(activeCandidates.filter((w) => w.category === targetWord.category && w.level.toLowerCase() === targetWord.level.toLowerCase()));
+    if (selectedDistractors.length < count) tryAdd(activeCandidates.filter((w) => w.category === targetWord.category));
+    if (selectedDistractors.length < count) tryAdd(activeCandidates.filter((w) => w.level.toLowerCase() === targetWord.level.toLowerCase()));
+    if (selectedDistractors.length < count) tryAdd(activeCandidates);
+    if (selectedDistractors.length < count) tryAdd(globalCandidates);
   }
 
   return selectedDistractors;

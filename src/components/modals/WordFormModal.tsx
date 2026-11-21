@@ -44,7 +44,7 @@ export const WordFormModal: React.FC<WordFormModalProps> = ({
 
   useEffect(() => {
     if (editingWord) {
-      setWordType(editingWord.type || 'noun');
+      setWordType(editingWord.type === 'phrase' ? 'sentence' : (editingWord.type || 'noun'));
       setLevel(editingWord.level || 'A1');
       setCategory(editingWord.category || 'other');
       setArticle(editingWord.article || 'der');
@@ -145,7 +145,6 @@ export const WordFormModal: React.FC<WordFormModalProps> = ({
     { id: 'noun', label: 'Noun' },
     { id: 'verb', label: 'Verb' },
     { id: 'adjective', label: 'Adjective' },
-    { id: 'phrase', label: 'Phrase' },
     { id: 'sentence', label: 'Sentence' },
   ];
 
@@ -177,7 +176,7 @@ export const WordFormModal: React.FC<WordFormModalProps> = ({
 
         <form onSubmit={handleSubmit} className="space-y-4">
           {/* Word Type Pills */}
-          <div className="grid grid-cols-5 gap-1 bg-slate-100 p-1 rounded-2xl">
+          <div className="grid grid-cols-4 gap-1 bg-slate-100 p-1 rounded-2xl">
             {wordTypes.map((t) => (
               <button
                 key={t.id}
@@ -252,14 +251,14 @@ export const WordFormModal: React.FC<WordFormModalProps> = ({
             )}
             <div className={wordType === 'noun' ? 'col-span-8' : 'col-span-12'}>
               <label className="block text-[11px] font-black uppercase text-slate-500 mb-1">
-                German Word / Phrase *
+                {wordType === 'sentence' ? 'German Sentence *' : 'German Word *'}
               </label>
               <input
                 type="text"
                 required
                 value={german}
                 onChange={(e) => setGerman(e.target.value)}
-                placeholder="e.g. Apfel, lernen, gemütlich"
+                placeholder={wordType === 'sentence' ? 'e.g. Wie geht es Ihnen?' : 'e.g. Apfel, lernen, gemütlich'}
                 className="w-full px-3.5 py-2.5 rounded-2xl bg-slate-50 border border-slate-200 text-xs font-bold text-slate-900"
               />
             </div>

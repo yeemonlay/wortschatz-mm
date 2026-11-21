@@ -14,14 +14,19 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
   const isAdmin = !!currentUser;
 
   return (
-    <header className="md:hidden bg-white/90 backdrop-blur-md px-4 sm:px-6 py-3.5 flex items-center justify-between border-b border-slate-200/70 sticky top-0 z-30 pt-safe">
+    <header className="md:hidden bg-white/90 backdrop-blur-md px-4 sm:px-6 h-[calc(3.75rem+env(safe-area-inset-top,0px))] pt-[env(safe-area-inset-top,0px)] flex items-center justify-between border-b border-slate-200/70 sticky top-0 z-30">
       <div className="flex items-center gap-2">
         <img
           src="/logo.png"
           alt="Wortschatz Logo"
           className="w-8 h-8 rounded-xl object-cover shadow-2xs"
         />
-        <span className="font-black text-base text-slate-900">Wortschatz</span>
+        <div className="flex items-center gap-1.5">
+          <span className="font-black text-base text-slate-900">Wortschatz</span>
+          <span className="text-[10px] font-black uppercase px-2 py-0.5 rounded-full bg-amber-100 text-amber-900 border border-amber-200">
+            MM
+          </span>
+        </div>
       </div>
 
       <button

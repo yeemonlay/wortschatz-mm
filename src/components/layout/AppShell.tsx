@@ -2,6 +2,8 @@ import React from 'react';
 import { Navbar } from './Navbar';
 import { MobileHeader } from './MobileHeader';
 import { BottomNav } from './BottomNav';
+import { PWAInstallModal } from '@/components/modals/PWAInstallModal';
+import { usePWAInstall } from '@/hooks/usePWAInstall';
 import { NavigationTab } from '@/types';
 import { User } from 'firebase/auth';
 import { Plus, Upload } from 'lucide-react';
@@ -26,6 +28,16 @@ export const AppShell: React.FC<AppShellProps> = ({
   children,
 }) => {
   const isAdmin = !!currentUser;
+  const {
+    isInstalled,
+    platform,
+    browser,
+    canInstall,
+    blockReason,
+    isInstallModalOpen,
+    setIsInstallModalOpen,
+    triggerInstall,
+  } = usePWAInstall();
 
   return (
     <div className="min-h-screen flex flex-col bg-[#f8f7f4] text-slate-900 selection:bg-indigo-500 selection:text-white">
@@ -37,12 +49,18 @@ export const AppShell: React.FC<AppShellProps> = ({
         onOpenAdminLogin={onOpenAdminLogin}
         onOpenWordModal={onOpenWordModal}
         onOpenImportExport={onOpenImportExport}
+        onInstallApp={triggerInstall}
+        isInstalled={isInstalled}
+        canInstall={canInstall}
       />
 
       {/* Mobile Top Header */}
       <MobileHeader
         currentUser={currentUser}
         onOpenAdminLogin={onOpenAdminLogin}
+        onInstallApp={triggerInstall}
+        isInstalled={isInstalled}
+        canInstall={canInstall}
       />
 
       {/* Main Content Area */}
@@ -75,6 +93,18 @@ export const AppShell: React.FC<AppShellProps> = ({
 
       {/* Mobile Bottom Pill Navigation */}
       <BottomNav currentTab={currentTab} onSelectTab={onSelectTab} />
+
+      {/* PWA Install Modal — shown for iOS, unsupported, or manual guidance */}
+      <PWAInstallModal
+        isOpen={isInstallModalOpen}
+        onClose={() => setIsInstallModalOpen(false)}
+        platform={platform}
+        browser={browser}
+        canInstall={canInstall}
+        isInstalled={isInstalled}
+        blockReason={blockReason}
+        onDirectInstall={triggerInstall}
+      />
     </div>
   );
 };

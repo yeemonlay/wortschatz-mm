@@ -9,6 +9,7 @@ import {
   RotateCw,
   Layers,
   Award,
+  ChevronLeft,
 } from 'lucide-react';
 import {
   VocabularyWord,
@@ -184,11 +185,10 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
             <div className="flex items-center gap-2 overflow-x-auto pt-2 pb-1.5 px-0.5 scrollbar-none">
               <button
                 onClick={() => setSelectedLevel('all')}
-                className={`px-3 py-1 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer ${
-                  selectedLevel === 'all'
-                    ? 'bg-indigo-600 text-white shadow-2xs'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
-                }`}
+                className={`px-3 py-1 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer ${selectedLevel === 'all'
+                  ? 'bg-indigo-600 text-white shadow-2xs'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
+                  }`}
               >
                 All
               </button>
@@ -199,13 +199,11 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                   <button
                     key={lvl}
                     onClick={() => setSelectedLevel(lvl.toLowerCase())}
-                    className={`px-3 py-1 rounded-full text-xs font-extrabold transition-all shrink-0 ${
-                      s.badgeBg
-                    } ${s.badgeText} ${
-                      active
+                    className={`px-3 py-1 rounded-full text-xs font-extrabold transition-all shrink-0 ${s.badgeBg
+                      } ${s.badgeText} ${active
                         ? 'ring-2 ring-indigo-600 ring-offset-2 ring-offset-white font-black shadow-2xs'
                         : 'opacity-70 hover:opacity-100'
-                    }`}
+                      }`}
                   >
                     {lvl}
                   </button>
@@ -222,11 +220,10 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 <button
                   key={size}
                   onClick={() => setSessionSize(size)}
-                  className={`w-full py-2 px-1 text-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    sessionSize === size
-                      ? 'bg-indigo-600 text-white shadow-xs font-black'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
+                  className={`w-full py-2 px-1 text-center rounded-xl text-xs font-bold transition-all cursor-pointer ${sessionSize === size
+                    ? 'bg-indigo-600 text-white shadow-xs font-black'
+                    : 'text-slate-600 hover:text-slate-900'
+                    }`}
                 >
                   {size}
                 </button>
@@ -298,11 +295,10 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                     key={cKey}
                     disabled={isDisabled}
                     onClick={() => startSession(cKey, cat.label, cat.emoji)}
-                    className={`p-4 rounded-3xl border text-left flex flex-col justify-between transition-all select-none ${
-                      isDisabled
-                        ? 'bg-slate-50 border-slate-200/60 opacity-40 cursor-not-allowed'
-                        : 'bg-white border-slate-200/80 shadow-2xs hover:shadow-sm hover:border-indigo-300 hover:-translate-y-0.5 cursor-pointer'
-                    }`}
+                    className={`p-4 rounded-3xl border text-left flex flex-col justify-between transition-all select-none ${isDisabled
+                      ? 'bg-slate-50 border-slate-200/60 opacity-40 cursor-not-allowed'
+                      : 'bg-white border-slate-200/80 shadow-2xs hover:shadow-sm hover:border-indigo-300 hover:-translate-y-0.5 cursor-pointer'
+                      }`}
                   >
                     <div className="space-y-1.5">
                       <div className="w-10 h-10 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-xl shadow-2xs">
@@ -408,9 +404,6 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
             {/* FRONT SIDE: Active Recall Prompt (English + Myanmar) */}
             {!isRevealed ? (
               <div className="space-y-2 py-2">
-                <span className="text-[10px] font-black tracking-widest text-slate-400 uppercase block">
-                  Translate to German
-                </span>
                 <h2 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">
                   {currentCard.english}
                 </h2>
@@ -427,10 +420,6 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
             ) : (
               /* BACK SIDE: German Target Revealed */
               <div className="space-y-3 py-1 animate-fadeIn">
-                <span className="text-[10px] font-black tracking-widest text-emerald-600 uppercase block">
-                  German Translation
-                </span>
-
                 <div className="space-y-1.5">
                   {currentCard.type === 'noun' && currentCard.article && (
                     <span className={`inline-block px-3 py-1 rounded-full text-xs font-black uppercase tracking-wider ${articleStyle}`}>
@@ -473,11 +462,10 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                       e.stopPropagation();
                       handleAudioPlay(currentCard.german);
                     }}
-                    className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-bold transition-all shadow-2xs ${
-                      audioPlaying
-                        ? 'bg-amber-100 text-amber-800 scale-105'
-                        : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
-                    }`}
+                    className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-bold transition-all shadow-2xs ${audioPlaying
+                      ? 'bg-amber-100 text-amber-800 scale-105'
+                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      }`}
                   >
                     <Volume2 className="w-4 h-4 text-indigo-600" />
                     <span>Listen Pronunciation</span>
@@ -527,7 +515,6 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           </div>
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center justify-center gap-2">
             <span>Practice Round Complete!</span>
-            <span className="text-3xl">🎉</span>
           </h2>
           <p className="text-xs text-slate-500 font-bold flex items-center justify-center gap-1.5">
             <span className="text-base">{activeDeckEmoji}</span>
@@ -549,7 +536,6 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
               </span>
               <div className="flex items-center gap-1.5 mt-1">
                 <span className="text-xs font-bold text-emerald-800">Mastered</span>
-                <span className="text-base">✅</span>
               </div>
             </div>
 
@@ -559,7 +545,6 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
               </span>
               <div className="flex items-center gap-1.5 mt-1">
                 <span className="text-xs font-bold text-rose-800">Needs Review</span>
-                <span className="text-base">🔄</span>
               </div>
             </div>
           </div>
@@ -595,7 +580,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
             onClick={() => setViewMode('hub')}
             className="w-full py-3 px-4 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 shadow-2xs transition flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span className="text-base">👈</span>
+            <ChevronLeft className="w-4 h-4 fill-white" />
             <span>Back to Category Decks</span>
           </button>
         </div>

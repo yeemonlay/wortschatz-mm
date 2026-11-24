@@ -148,7 +148,7 @@ export function generateArticleQuestion(targetWord: VocabularyWord): QuizQuestio
   const options: QuizOption[] = articles.map((item) => ({
     id: `opt-article-${item.article}-${targetWord.id}`,
     label: item.article,
-    subLabel: `${item.genderEn} • ${item.genderMm}`,
+    subLabel: `${item.genderEn}`,
     isCorrect: targetWord.article === item.article,
   }));
 
@@ -164,9 +164,8 @@ export function generateArticleQuestion(targetWord: VocabularyWord): QuizQuestio
     id: `q-article-${targetWord.id}-${Math.random().toString(36).substring(2, 7)}`,
     type: 'articles',
     prompt: `___ ${targetWord.german}`,
-    promptSub: `${targetWord.plural ? `Plural: die ${targetWord.plural} • ` : ''}${targetWord.english}${
-      targetWord.myanmar ? ` (${targetWord.myanmar})` : ''
-    }`,
+    promptSub: `${targetWord.plural ? `Plural: die ${targetWord.plural} • ` : ''}${targetWord.english}${targetWord.myanmar ? ` (${targetWord.myanmar})` : ''
+      }`,
     targetWord,
     options,
     explanation,
@@ -289,9 +288,8 @@ export function generateSentenceQuestion(
 
   const options = shuffleArray([correctOption, ...distractorOptions]);
 
-  const explanation = `Complete sentence: "${rawSentence}" — ${targetWord.exampleEnglish || targetWord.english}${
-    targetWord.exampleMyanmar ? ` (${targetWord.exampleMyanmar})` : ''
-  }`;
+  const explanation = `Complete sentence: "${rawSentence}" — ${targetWord.exampleEnglish || targetWord.english}${targetWord.exampleMyanmar ? ` (${targetWord.exampleMyanmar})` : ''
+    }`;
 
   return {
     id: `q-sentence-${targetWord.id}-${Math.random().toString(36).substring(2, 7)}`,

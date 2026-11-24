@@ -1,0 +1,37 @@
+{
+  "name": "Wortschatz MM",
+  "short_name": "Wortschatz MM",
+  "description": "Learn German vocabulary with Myanmar translations, flashcards, audio, and quizzes offline and on any device.",
+  "start_url": "/",
+  "scope": "/",
+  "id": "/",
+  "display": "standalone",
+  "background_color": "#f8f7f4",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
+  "categories": [
+    "education",
+    "reference",
+    "productivity"
+  ],
+  "icons": [
+    {
+      "src": "/pwa-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/pwa-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

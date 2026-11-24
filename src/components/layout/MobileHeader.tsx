@@ -1,15 +1,20 @@
 import React from 'react';
-import { Crown, Lock } from 'lucide-react';
+import { Crown, Download } from 'lucide-react';
 import { User } from 'firebase/auth';
 
 interface MobileHeaderProps {
   currentUser: User | null;
   onOpenAdminLogin: () => void;
+  onInstallApp?: () => void;
+  isInstalled?: boolean;
+  canInstall?: boolean;
 }
 
 export const MobileHeader: React.FC<MobileHeaderProps> = ({
   currentUser,
   onOpenAdminLogin,
+  onInstallApp,
+  isInstalled = false,
 }) => {
   const isAdmin = !!currentUser;
 
@@ -29,26 +34,28 @@ export const MobileHeader: React.FC<MobileHeaderProps> = ({
         </div>
       </div>
 
-      <button
-        onClick={onOpenAdminLogin}
-        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all ${
-          isAdmin
-            ? 'bg-amber-100 text-amber-900 border-amber-300'
-            : 'bg-white text-slate-600 border-slate-200 shadow-2xs hover:bg-slate-50'
-        }`}
-      >
-        {isAdmin ? (
-          <>
+      <div className="flex items-center gap-2">
+        {!isInstalled && onInstallApp && (
+          <button
+            onClick={onInstallApp}
+            title="Install Wortschatz MM App"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border shadow-2xs transition-all bg-indigo-50 text-indigo-700 border-indigo-200 hover:bg-indigo-100 cursor-pointer"
+          >
+            <Download className="w-3.5 h-3.5" />Install App
+            {/* <span className="hidden xs:inline sm:inline">Install</span> */}
+          </button>
+        )}
+
+        {isAdmin && (
+          <button
+            onClick={onOpenAdminLogin}
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold border transition-all bg-amber-100 text-amber-900 border-amber-300"
+          >
             <Crown className="w-3.5 h-3.5 text-amber-600 fill-amber-500" />
             <span>Admin</span>
-          </>
-        ) : (
-          <>
-            <Lock className="w-3.5 h-3.5 text-slate-500" />
-            <span>Admin Login</span>
-          </>
+          </button>
         )}
-      </button>
+      </div>
     </header>
   );
 };

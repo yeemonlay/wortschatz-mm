@@ -5,7 +5,8 @@ import {
   CheckCircle2,
   XCircle,
   RotateCcw,
-  ArrowLeft,
+  CircleChevronLeft,
+  CircleChevronRight,
   Flame,
   Play,
   Zap,
@@ -219,11 +220,10 @@ export const QuizView: React.FC<QuizViewProps> = ({
             <div className="flex items-center gap-2 overflow-x-auto pt-2 pb-1.5 px-0.5 scrollbar-none">
               <button
                 onClick={() => setSelectedLevel('all')}
-                className={`px-3 py-1 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer ${
-                  selectedLevel === 'all'
-                    ? 'bg-indigo-600 text-white shadow-2xs'
-                    : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
-                }`}
+                className={`px-3 py-1 rounded-full text-xs font-bold transition-all shrink-0 cursor-pointer ${selectedLevel === 'all'
+                  ? 'bg-indigo-600 text-white shadow-2xs'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
+                  }`}
               >
                 All
               </button>
@@ -234,13 +234,11 @@ export const QuizView: React.FC<QuizViewProps> = ({
                   <button
                     key={lvl}
                     onClick={() => setSelectedLevel(lvl.toLowerCase())}
-                    className={`px-3 py-1 rounded-full text-xs font-extrabold transition-all shrink-0 cursor-pointer ${
-                      s.badgeBg
-                    } ${s.badgeText} ${
-                      active
+                    className={`px-3 py-1 rounded-full text-xs font-extrabold transition-all shrink-0 cursor-pointer ${s.badgeBg
+                      } ${s.badgeText} ${active
                         ? 'ring-2 ring-indigo-600 ring-offset-2 ring-offset-white font-black shadow-2xs'
                         : 'opacity-70 hover:opacity-100'
-                    }`}
+                      }`}
                   >
                     {lvl}
                   </button>
@@ -257,11 +255,10 @@ export const QuizView: React.FC<QuizViewProps> = ({
                 <button
                   key={size}
                   onClick={() => setSessionSize(size)}
-                  className={`w-full py-2 px-1 text-center rounded-xl text-xs font-bold transition-all cursor-pointer ${
-                    sessionSize === size
-                      ? 'bg-indigo-600 text-white shadow-xs font-black'
-                      : 'text-slate-600 hover:text-slate-900'
-                  }`}
+                  className={`w-full py-2 px-1 text-center rounded-xl text-xs font-bold transition-all cursor-pointer ${sessionSize === size
+                    ? 'bg-indigo-600 text-white shadow-xs font-black'
+                    : 'text-slate-600 hover:text-slate-900'
+                    }`}
                 >
                   {size}
                 </button>
@@ -434,7 +431,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
             onClick={() => setViewMode('hub')}
             className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-2xs transition cursor-pointer"
           >
-            <ArrowLeft className="w-3.5 h-3.5" />
+            <CircleChevronLeft className="w-3.5 h-3.5" />
             <span>Quiz</span>
           </button>
 
@@ -489,11 +486,10 @@ export const QuizView: React.FC<QuizViewProps> = ({
               <button
                 type="button"
                 onClick={() => handleAudioPlay(currentQuestion.promptAudioText)}
-                className={`w-7 h-7 rounded-full flex items-center justify-center transition-all shrink-0 cursor-pointer ${
-                  audioPlaying
-                    ? 'bg-indigo-200 text-indigo-800 scale-110 shadow-xs'
-                    : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'
-                }`}
+                className={`w-7 h-7 rounded-full flex items-center justify-center transition-all shrink-0 cursor-pointer ${audioPlaying
+                  ? 'bg-indigo-200 text-indigo-800 scale-110 shadow-xs'
+                  : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'
+                  }`}
                 title="Listen German"
                 aria-label="Listen German"
               >
@@ -587,7 +583,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
                 {selectedOptionId &&
-                currentQuestion.options.find((o) => o.id === selectedOptionId)?.isCorrect ? (
+                  currentQuestion.options.find((o) => o.id === selectedOptionId)?.isCorrect ? (
                   <div className="flex items-center gap-1.5 text-emerald-600 font-black text-sm">
                     <CheckCircle2 className="w-4 h-4" />
                     <span>Richtig! (Correct!)</span>
@@ -614,7 +610,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
               className="w-full py-3.5 rounded-2xl bg-indigo-600 text-white text-xs font-black hover:bg-indigo-700 transition flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-[0.99]"
             >
               <span>{currentIndex + 1 < totalQuestions ? 'Next Question' : 'View Results'}</span>
-              <span>→</span>
+              <CircleChevronRight className="w-4 h-4" />
             </button>
           </div>
         )}
@@ -650,7 +646,6 @@ export const QuizView: React.FC<QuizViewProps> = ({
           </div>
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center justify-center gap-2">
             <span>{performance.title}</span>
-            <span className="text-3xl">🎉</span>
           </h2>
           <p className="text-xs text-slate-500 font-bold">
             {performance.sub}
@@ -706,7 +701,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
             onClick={() => setViewMode('hub')}
             className="w-full py-3 px-4 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 shadow-2xs transition flex items-center justify-center gap-2 cursor-pointer"
           >
-            <span className="text-base">👈</span>
+            <CircleChevronLeft className="w-4 h-4" />
             <span>Back to Quiz Hub</span>
           </button>
         </div>

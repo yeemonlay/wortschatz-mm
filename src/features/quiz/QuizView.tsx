@@ -201,10 +201,10 @@ export const QuizView: React.FC<QuizViewProps> = ({
         <div className="flex items-start justify-between flex-wrap gap-2">
           <div>
             <h1 className="text-xl md:text-3xl font-black text-slate-900 tracking-tight">
-              Interactive Quizzes
+              Quizzes
             </h1>
             <p className="text-[11px] md:text-sm text-slate-500 mt-0.5">
-              Test and master German vocabulary with full-block multiple-choice challenges
+              Pick a topic and test your German knowledge
             </p>
           </div>
         </div>
@@ -486,9 +486,9 @@ export const QuizView: React.FC<QuizViewProps> = ({
               <button
                 type="button"
                 onClick={() => handleAudioPlay(currentQuestion.promptAudioText)}
-                className={`w-7 h-7 rounded-full flex items-center justify-center transition-all shrink-0 cursor-pointer ${audioPlaying
-                  ? 'bg-indigo-200 text-indigo-800 scale-110 shadow-xs'
-                  : 'bg-indigo-50 text-indigo-600 hover:bg-indigo-100'
+                className={`w-7 h-7 rounded-lg flex items-center justify-center transition-all shrink-0 cursor-pointer ${audioPlaying
+                  ? 'bg-amber-100 text-amber-800 scale-105'
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                   }`}
                 title="Listen German"
                 aria-label="Listen German"
@@ -498,11 +498,11 @@ export const QuizView: React.FC<QuizViewProps> = ({
             )}
           </div>
 
-          {currentQuestion.promptSub && (
+          {/* {currentQuestion.promptSub && (
             <p className="text-xs font-semibold text-slate-500">
               {currentQuestion.promptSub}
             </p>
-          )}
+          )} */}
         </div>
 
         {/* Full-Block Options Stack (One Per Line) */}
@@ -641,8 +641,8 @@ export const QuizView: React.FC<QuizViewProps> = ({
       <div className="max-w-md mx-auto space-y-6 animate-fadeIn py-4">
         {/* Celebration Trophy */}
         <div className="text-center space-y-2">
-          <div className="w-20 h-20 mx-auto rounded-3xl bg-indigo-100/70 border border-indigo-200 flex items-center justify-center shadow-xs">
-            <Award className="w-10 h-10 text-indigo-600 stroke-[2.2]" />
+          <div className="w-20 h-20 mx-auto rounded-3xl bg-amber-100/70 border border-amber-200 flex items-center justify-center shadow-xs">
+            <Award className="w-10 h-10 text-amber-600 stroke-[2.2]" />
           </div>
           <h2 className="text-2xl sm:text-3xl font-black text-slate-900 tracking-tight flex items-center justify-center gap-2">
             <span>{performance.title}</span>

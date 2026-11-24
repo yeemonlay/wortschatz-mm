@@ -270,11 +270,10 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
           <div className="flex items-center gap-1.5 overflow-x-auto pb-1 -mx-4 px-4 scrollbar-none">
             <button
               onClick={() => setSelectedCategory('all')}
-              className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-bold border transition-all ${
-                selectedCategory === 'all'
+              className={`shrink-0 px-3 py-1 rounded-full text-[11px] font-bold border transition-all ${selectedCategory === 'all'
                   ? 'bg-indigo-600 text-white border-indigo-600 shadow-2xs'
                   : 'bg-white text-slate-600 border-slate-200'
-              }`}
+                }`}
             >
               All
             </button>
@@ -284,11 +283,10 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
                 <button
                   key={cKey}
                   onClick={() => setSelectedCategory(cKey)}
-                  className={`shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all ${
-                    active
+                  className={`shrink-0 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[11px] font-bold border transition-all ${active
                       ? 'bg-indigo-600 text-white border-indigo-600 shadow-2xs'
                       : 'bg-white text-slate-600 border-slate-200'
-                  }`}
+                    }`}
                 >
                   <span>{cat.emoji}</span>
                   <span>{cat.label}</span>
@@ -301,9 +299,8 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
           <div className="flex items-center justify-between gap-1 bg-white p-1.5 rounded-2xl border border-slate-200 shadow-2xs">
             <button
               onClick={() => handleSetLevel('all')}
-              className={`flex-1 py-1 text-center rounded-xl text-[10px] font-black transition-all ${
-                selectedLevel === 'all' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-500'
-              }`}
+              className={`flex-1 py-1 text-center rounded-xl text-[10px] font-black transition-all ${selectedLevel === 'all' ? 'bg-indigo-600 text-white shadow-2xs' : 'text-slate-500'
+                }`}
             >
               All
             </button>
@@ -314,11 +311,10 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
                 <button
                   key={lvl}
                   onClick={() => handleSetLevel(lvl)}
-                  className={`flex-1 py-1 text-center rounded-xl text-[10px] font-black transition-all ${
-                    active
+                  className={`flex-1 py-1 text-center rounded-xl text-[10px] font-black transition-all ${active
                       ? `${s.badgeBg} ${s.badgeText} ring-2 ring-indigo-600 ring-offset-1 ring-offset-white font-black`
                       : 'text-slate-500'
-                  }`}
+                    }`}
                 >
                   {lvl}
                 </button>
@@ -422,11 +418,10 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
                     <div className="flex items-center gap-1">
                       <button
                         onClick={() => handleAudioPlay(item.german, item.id)}
-                        className={`p-1.5 rounded-lg transition-all ${
-                          audioPlaying === item.id
+                        className={`p-1.5 rounded-lg transition-all ${audioPlaying === item.id
                             ? 'bg-amber-100 text-amber-800 scale-105'
                             : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                        }`}
+                          }`}
                         title="Listen to pronunciation"
                       >
                         <Volume2 className="w-3.5 h-3.5" />
@@ -541,11 +536,10 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
               </span>
               <button
                 onClick={() => handleSetLevel('all')}
-                className={`px-2.5 py-0.5 rounded-full text-xs font-bold transition-all ${
-                  selectedLevel === 'all'
+                className={`px-2.5 py-0.5 rounded-full text-xs font-bold transition-all ${selectedLevel === 'all'
                     ? 'bg-indigo-600 text-white shadow-2xs'
                     : 'bg-slate-100 text-slate-600 hover:bg-slate-200/70'
-                }`}
+                  }`}
               >
                 All
               </button>
@@ -556,13 +550,11 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
                   <button
                     key={lvl}
                     onClick={() => handleSetLevel(lvl)}
-                    className={`px-2.5 py-0.5 rounded-full text-xs font-extrabold transition-all ${
-                      s.badgeBg
-                    } ${s.badgeText} ${
-                      active
+                    className={`px-2.5 py-0.5 rounded-full text-xs font-extrabold transition-all ${s.badgeBg
+                      } ${s.badgeText} ${active
                         ? 'ring-2 ring-indigo-600 ring-offset-2 ring-offset-white font-black shadow-2xs'
                         : 'opacity-70 hover:opacity-100'
-                    }`}
+                      }`}
                   >
                     {lvl}
                   </button>
@@ -674,11 +666,10 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
                   <div className="flex items-center gap-1.5 self-center shrink-0">
                     <button
                       onClick={() => handleAudioPlay(item.german, item.id)}
-                      className={`p-2 rounded-xl transition-all ${
-                        audioPlaying === item.id
+                      className={`p-2 rounded-xl transition-all ${audioPlaying === item.id
                           ? 'bg-amber-100 text-amber-800 scale-105'
                           : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                      }`}
+                        }`}
                       title="Listen"
                     >
                       <Volume2 className="w-4 h-4" />

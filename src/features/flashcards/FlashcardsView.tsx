@@ -169,7 +169,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
               Flashcards
             </h1>
             <p className="text-[11px] md:text-sm text-slate-500 mt-0.5">
-              Choose a topic deck to practice German active recall with bite-sized rounds
+              Learn German vocabulary by category and level with flashcards
             </p>
           </div>
         </div>
@@ -414,7 +414,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 )}
                 <p className="text-xs font-bold text-slate-400 pt-3 flex items-center justify-center gap-1">
                   <RotateCw className="w-3.5 h-3.5 text-slate-400 animate-spin-slow" />
-                  <span>Tap card or Reveal to check German</span>
+                  <span>Tap to reveal the German</span>
                 </p>
               </div>
             ) : (
@@ -464,10 +464,10 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                     }}
                     className={`inline-flex items-center gap-1.5 px-4 py-2 rounded-2xl text-xs font-bold transition-all shadow-2xs ${audioPlaying
                       ? 'bg-amber-100 text-amber-800 scale-105'
-                      : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
+                      : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
                       }`}
                   >
-                    <Volume2 className="w-4 h-4 text-indigo-600" />
+                    <Volume2 className="w-4 h-4" />
                     <span>Listen Pronunciation</span>
                   </button>
                 </div>

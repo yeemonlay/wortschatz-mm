@@ -12,7 +12,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onSelectTab })
   const navItems = [
     { id: 'dashboard' as NavigationTab, label: 'Dashboard', icon: Layers },
     { id: 'dictionary' as NavigationTab, label: 'Word Bank', icon: BookOpen },
-    { id: 'flashcards' as NavigationTab, label: 'Cards', icon: Sparkles },
+    { id: 'flashcards' as NavigationTab, label: 'Flashcard', icon: Sparkles },
     { id: 'quiz' as NavigationTab, label: 'Quiz', icon: Award },
   ];
 

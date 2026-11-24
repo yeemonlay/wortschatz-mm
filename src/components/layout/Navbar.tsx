@@ -29,8 +29,8 @@ export const Navbar: React.FC<NavbarProps> = ({
   const navItems = [
     { id: 'dashboard' as NavigationTab, label: 'Dashboard', icon: Layers },
     { id: 'dictionary' as NavigationTab, label: 'Word Bank', icon: BookOpen },
-    { id: 'flashcards' as NavigationTab, label: 'Flashcards', icon: Sparkles },
-    { id: 'quiz' as NavigationTab, label: 'Quizzes', icon: Award },
+    { id: 'flashcards' as NavigationTab, label: 'Flashcard', icon: Sparkles },
+    { id: 'quiz' as NavigationTab, label: 'Quiz', icon: Award },
   ];
 
   const isAdmin = !!currentUser;

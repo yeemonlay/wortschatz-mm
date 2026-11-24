@@ -76,7 +76,11 @@ export const DashboardView: React.FC<DashboardViewProps> = ({
                     {meta.title}
                   </h3>
                   <p className="text-[11px] md:text-xs font-semibold text-slate-700/90">
-                    {loading ? 'Loading...' : `${dbCount} essential words`}
+                    {loading
+                      ? 'Loading...'
+                      : dbCount === 0
+                      ? '0 essential words - coming soon'
+                      : `${dbCount} essential words`}
                   </p>
                 </div>
 

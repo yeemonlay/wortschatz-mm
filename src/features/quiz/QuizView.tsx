@@ -5,8 +5,9 @@ import {
   CheckCircle2,
   XCircle,
   RotateCcw,
-  CircleChevronLeft,
-  CircleChevronRight,
+  ArrowLeft,
+  ChevronLeft,
+  ChevronRight,
   Flame,
   Play,
   Zap,
@@ -18,6 +19,7 @@ import {
 } from '@/types';
 import { subscribeToVocabulary } from '@/services/vocabularyService';
 import { speakGerman } from '@/services/audioService';
+import { NoticeDialog } from '@/components/ui/NoticeDialog';
 import {
   QuizMode,
   QuizQuestion,
@@ -31,7 +33,7 @@ interface QuizViewProps {
 }
 
 type ViewMode = 'hub' | 'playing' | 'summary';
-type SessionSize = 15 | 30 | 50 | 100;
+type SessionSize = 10 | 30 | 50 | 100;
 
 export const QuizView: React.FC<QuizViewProps> = ({
   words: propWords,
@@ -60,7 +62,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
   const [viewMode, setViewMode] = useState<ViewMode>('hub');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
   const [selectedMode, setSelectedMode] = useState<QuizMode>('mixed');
-  const [sessionSize, setSessionSize] = useState<SessionSize>(15);
+  const [sessionSize, setSessionSize] = useState<SessionSize>(10);
 
   // Active quiz session state
   const [questionQueue, setQuestionQueue] = useState<QuizQuestion[]>([]);
@@ -78,6 +80,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
     userOptionId: string;
     isCorrect: boolean;
   }[]>([]);
+  const [emptyNoticeMessage, setEmptyNoticeMessage] = useState<string | null>(null);
 
   // Filter words by currently selected CEFR level
   const levelFilteredWords = allWords.filter(
@@ -91,6 +94,9 @@ export const QuizView: React.FC<QuizViewProps> = ({
   // Start a fresh quiz session
   const startQuiz = (modeOverride?: QuizMode) => {
     const mode = modeOverride || selectedMode;
+    if (modeOverride) {
+      setSelectedMode(modeOverride);
+    }
     const questions = createQuizSession(allWords, {
       level: selectedLevel,
       mode,
@@ -98,7 +104,11 @@ export const QuizView: React.FC<QuizViewProps> = ({
     });
 
     if (questions.length === 0) {
-      alert('Not enough vocabulary words available to start a quiz for this selection.');
+      setEmptyNoticeMessage(
+        selectedLevel === 'all'
+          ? 'Not enough vocabulary words are available to start this quiz yet.'
+          : `Not enough ${selectedLevel.toUpperCase()} vocabulary words are available to start this quiz yet.`
+      );
       return;
     }
 
@@ -251,7 +261,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
           <div className="pt-3.5 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <span className="text-xs font-bold text-slate-600">Round Size</span>
             <div className="grid grid-cols-4 gap-1.5 bg-slate-100 p-1.5 rounded-2xl w-full sm:w-auto sm:min-w-[280px]">
-              {([15, 30, 50, 100] as const).map((size) => (
+              {([10, 30, 50, 100] as const).map((size) => (
                 <button
                   key={size}
                   onClick={() => setSessionSize(size)}
@@ -397,6 +407,13 @@ export const QuizView: React.FC<QuizViewProps> = ({
             </div>
           )}
         </div>
+
+        <NoticeDialog
+          isOpen={!!emptyNoticeMessage}
+          title="Quiz Unavailable"
+          message={emptyNoticeMessage || ''}
+          onClose={() => setEmptyNoticeMessage(null)}
+        />
       </div>
     );
   }
@@ -424,14 +441,17 @@ export const QuizView: React.FC<QuizViewProps> = ({
     };
 
     return (
-      <div className="max-w-xl mx-auto space-y-2.5 sm:space-y-3.5 animate-fadeIn pb-4">
-        {/* Top Player Navigation Bar */}
-        <div className="flex items-center justify-between text-xs font-bold text-slate-600">
+      <div className="max-w-xl mx-auto space-y-2.5 sm:space-y-3.5 animate-fadeIn pb-2">
+        {/* Top Player Navigation Bar (sticky on mobile so Back button stays visible) */}
+        <div
+          className="sticky md:static z-20 -mx-4 px-4 sm:mx-0 sm:px-0 py-1.5 sm:py-0 bg-[#f8f7f4]/95 md:bg-transparent backdrop-blur-md md:backdrop-blur-none flex items-center justify-between text-xs font-bold text-slate-600"
+          style={{ top: 'calc(3.75rem + env(safe-area-inset-top, 0px))' }}
+        >
           <button
             onClick={() => setViewMode('hub')}
-            className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-2xs transition cursor-pointer"
+            className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-2xs transition cursor-pointer"
           >
-            <CircleChevronLeft className="w-3.5 h-3.5" />
+            <ArrowLeft className="w-3.5 h-3.5" />
             <span>Quiz</span>
           </button>
 
@@ -610,7 +630,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
               className="w-full py-3.5 rounded-2xl bg-indigo-600 text-white text-xs font-black hover:bg-indigo-700 transition flex items-center justify-center gap-2 shadow-xs cursor-pointer active:scale-[0.99]"
             >
               <span>{currentIndex + 1 < totalQuestions ? 'Next Question' : 'View Results'}</span>
-              <CircleChevronRight className="w-4 h-4" />
+              <ChevronRight className="w-4 h-4" />
             </button>
           </div>
         )}
@@ -690,7 +710,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
           )}
 
           <button
-            onClick={() => startQuiz()}
+            onClick={() => startQuiz(selectedMode)}
             className="w-full py-3.5 px-4 rounded-2xl bg-indigo-600 text-white font-black text-xs hover:bg-indigo-700 shadow-xs transition flex items-center justify-center gap-2 cursor-pointer active:scale-95"
           >
             <Play className="w-4 h-4 fill-white" />
@@ -701,7 +721,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
             onClick={() => setViewMode('hub')}
             className="w-full py-3 px-4 rounded-2xl bg-white border border-slate-200 text-slate-700 font-bold text-xs hover:bg-slate-50 shadow-2xs transition flex items-center justify-center gap-2 cursor-pointer"
           >
-            <CircleChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-4 h-4" />
             <span>Back to Quiz Hub</span>
           </button>
         </div>

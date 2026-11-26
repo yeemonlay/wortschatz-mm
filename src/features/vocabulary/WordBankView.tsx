@@ -49,7 +49,7 @@ const CATEGORY_OPTIONS: CustomSelectOption[] = [
   ...Object.entries(CATEGORIES_META).map(([cKey, cat]) => ({
     value: cKey,
     label: cat.label,
-    emoji: cat.emoji,
+    icon: cat.icon,
   })),
 ];
 
@@ -254,7 +254,7 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search words..."
-              className="w-full pl-9 pr-8 py-2 bg-white border border-slate-200/90 rounded-2xl text-base sm:text-xs font-semibold placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
+              className="w-full pl-9 pr-8 py-2 bg-white border border-slate-200/90 rounded-2xl text-xs font-semibold placeholder:text-slate-400 focus:outline-hidden focus:ring-2 focus:ring-indigo-500/20 shadow-2xs"
             />
             {searchQuery && (
               <button
@@ -279,6 +279,7 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
             </button>
             {Object.entries(CATEGORIES_META).map(([cKey, cat]) => {
               const active = selectedCategory === cKey;
+              const CatIcon = cat.icon;
               return (
                 <button
                   key={cKey}
@@ -288,7 +289,7 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
                       : 'bg-white text-slate-600 border-slate-200'
                     }`}
                 >
-                  <span>{cat.emoji}</span>
+                  <CatIcon className="w-3 h-3 shrink-0" />
                   <span>{cat.label}</span>
                 </button>
               );
@@ -369,12 +370,12 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
                     <div className="flex items-center flex-wrap gap-1.5">
                       {item.type === 'noun' && item.article && (
                         <span
-                          className={`px-2 py-0.5 rounded-md text-[11px] font-black ${articleStyle}`}
+                          className={`px-2 py-0.5 rounded-md text-xs font-bold ${articleStyle}`}
                         >
                           {item.article}
                         </span>
                       )}
-                      <span className="text-sm font-black text-slate-900">{item.german}</span>
+                      <span className="text-xs font-bold text-slate-900">{item.german}</span>
                     </div>
                     <div className="flex items-center gap-1 shrink-0">
                       <span
@@ -383,9 +384,10 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
                         {item.level}
                       </span>
                       <span
-                        className={`px-2 py-0.5 rounded-full text-[9px] font-bold border ${cat.pillClass}`}
+                        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[9px] font-bold border ${cat.pillClass}`}
                       >
-                        {cat.emoji} {cat.label}
+                        <cat.icon className="w-2.5 h-2.5 shrink-0" />
+                        <span>{cat.label}</span>
                       </span>
                     </div>
                   </div>
@@ -395,19 +397,26 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
                     <p className="text-xs font-semibold text-amber-800">{item.myanmar}</p>
                   )}
 
-                  {(item.exampleGerman || item.plural || item.conjugationSummary) && (
-                    <p className="text-[10px] text-slate-400 italic">
-                      {item.plural && (
-                        <span className="not-italic font-medium text-slate-500 mr-1.5">
-                          Pl: {item.plural}
-                        </span>
-                      )}
-                      {item.conjugationSummary && (
-                        <span className="not-italic font-medium text-slate-500 mr-1.5">
-                          {item.conjugationSummary}
-                        </span>
-                      )}
-                      {item.exampleGerman && `"${item.exampleGerman}"`}
+                  {item.plural && (
+                    <p className="text-xs font-medium text-slate-500">
+                      Pl: {item.plural}
+                    </p>
+                  )}
+                  {item.conjugationSummary && (
+                    <p className="text-xs font-medium text-slate-500">
+                      {item.conjugationSummary}
+                    </p>
+                  )}
+                  {item.exampleGerman && (
+                    <p className="text-xs text-slate-500 italic">
+                      "{item.exampleGerman}"
+                    </p>
+                  )}
+                  {(item.exampleEnglish || item.exampleMyanmar) && (
+                    <p className="text-xs text-slate-500">
+                      {item.exampleEnglish}
+                      {item.exampleEnglish && item.exampleMyanmar ? ' • ' : ''}
+                      {item.exampleMyanmar}
                     </p>
                   )}
 
@@ -620,7 +629,7 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
                           {item.article}
                         </span>
                       )}
-                      <span className="text-base font-black text-slate-900">{item.german}</span>
+                      <span className="text-sm font-bold text-slate-900">{item.german}</span>
                       <span className="text-[11px] font-semibold text-slate-400">
                         ({item.type})
                       </span>
@@ -632,7 +641,7 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
                       <span
                         className={`inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold border ${cat.pillClass}`}
                       >
-                        <span>{cat.emoji}</span>
+                        <cat.icon className="w-3 h-3 shrink-0" />
                         <span>{cat.label}</span>
                       </span>
                     </div>
@@ -646,19 +655,26 @@ export const WordBankView: React.FC<WordBankViewProps> = ({
                       )}
                     </div>
 
-                    {(item.exampleGerman || item.plural || item.conjugationSummary) && (
-                      <p className="text-[11px] text-slate-400 italic">
-                        {item.plural && (
-                          <span className="not-italic font-medium text-slate-500 mr-2">
-                            Pl: {item.plural} •
-                          </span>
-                        )}
-                        {item.conjugationSummary && (
-                          <span className="not-italic font-medium text-slate-500 mr-2">
-                            {item.conjugationSummary} •
-                          </span>
-                        )}
-                        {item.exampleGerman && `"${item.exampleGerman}"`}
+                    {item.plural && (
+                      <p className="text-sm font-medium text-slate-500">
+                        Pl: {item.plural}
+                      </p>
+                    )}
+                    {item.conjugationSummary && (
+                      <p className="text-sm font-medium text-slate-500">
+                        {item.conjugationSummary}
+                      </p>
+                    )}
+                    {item.exampleGerman && (
+                      <p className="text-sm text-slate-500 italic">
+                        "{item.exampleGerman}"
+                      </p>
+                    )}
+                    {(item.exampleEnglish || item.exampleMyanmar) && (
+                      <p className="text-sm text-slate-500">
+                        {item.exampleEnglish}
+                        {item.exampleEnglish && item.exampleMyanmar ? ' • ' : ''}
+                        {item.exampleMyanmar}
                       </p>
                     )}
                   </div>

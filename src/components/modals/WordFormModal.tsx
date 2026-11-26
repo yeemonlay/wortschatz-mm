@@ -224,7 +224,7 @@ export const WordFormModal: React.FC<WordFormModalProps> = ({
               >
                 {Object.entries(CATEGORIES_META).map(([key, meta]) => (
                   <option key={key} value={key}>
-                    {meta.emoji} {meta.label}
+                    {meta.label}
                   </option>
                 ))}
               </select>

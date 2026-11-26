@@ -10,9 +10,12 @@ import {
   Layers,
   Award,
   ChevronLeft,
+  Trophy,
+  Sparkles,
 } from 'lucide-react';
 import {
   VocabularyWord,
+  VocabularyCategory,
   CATEGORIES_META,
   CEFR_LEVELS_LIST,
   LEVEL_STYLES,
@@ -20,6 +23,7 @@ import {
 } from '@/types';
 import { subscribeToVocabulary } from '@/services/vocabularyService';
 import { speakGerman } from '@/services/audioService';
+import { NoticeDialog } from '@/components/ui/NoticeDialog';
 
 interface FlashcardsViewProps {
   words?: VocabularyWord[];
@@ -27,7 +31,7 @@ interface FlashcardsViewProps {
 }
 
 type ViewMode = 'hub' | 'playing' | 'summary';
-type SessionSize = 15 | 30 | 50 | 100;
+type SessionSize = 10 | 30 | 50 | 100;
 
 export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   words: propWords,
@@ -55,11 +59,11 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   // View state machine
   const [viewMode, setViewMode] = useState<ViewMode>('hub');
   const [selectedLevel, setSelectedLevel] = useState<string>('all');
-  const [sessionSize, setSessionSize] = useState<SessionSize>(15);
+  const [sessionSize, setSessionSize] = useState<SessionSize>(10);
 
   // Active round state
   const [activeDeckTitle, setActiveDeckTitle] = useState('All Vocabulary');
-  const [activeDeckEmoji, setActiveDeckEmoji] = useState('✨');
+  const [activeDeckCategory, setActiveDeckCategory] = useState<VocabularyCategory | 'all'>('all');
   const [sessionQueue, setSessionQueue] = useState<VocabularyWord[]>([]);
   const [initialSessionTotal, setInitialSessionTotal] = useState(0);
   const [isRevealed, setIsRevealed] = useState(false);
@@ -68,6 +72,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   // Round results tracking (In-Session only)
   const [masteredCards, setMasteredCards] = useState<VocabularyWord[]>([]);
   const [stillLearningCards, setStillLearningCards] = useState<VocabularyWord[]>([]);
+  const [emptyNoticeMessage, setEmptyNoticeMessage] = useState<string | null>(null);
 
   // Filter words by currently selected CEFR level
   const levelFilteredWords = allWords.filter(
@@ -75,14 +80,18 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   );
 
   // Start a study round
-  const startSession = (categoryKey: string, deckTitle: string, emoji: string) => {
+  const startSession = (categoryKey: string, deckTitle: string) => {
     let pool = levelFilteredWords;
     if (categoryKey !== 'all') {
       pool = levelFilteredWords.filter((w) => w.category === categoryKey);
     }
 
     if (pool.length === 0) {
-      alert('No vocabulary entries available for this selection yet.');
+      setEmptyNoticeMessage(
+        selectedLevel === 'all'
+          ? 'No vocabulary entries are available for this deck yet.'
+          : `No ${selectedLevel.toUpperCase()} vocabulary entries are available for this selection yet.`
+      );
       return;
     }
 
@@ -92,7 +101,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
     const roundWords = shuffled.slice(0, count);
 
     setActiveDeckTitle(deckTitle);
-    setActiveDeckEmoji(emoji);
+    setActiveDeckCategory(categoryKey as VocabularyCategory | 'all');
     setSessionQueue(roundWords);
     setInitialSessionTotal(roundWords.length);
     setIsRevealed(false);
@@ -216,7 +225,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           <div className="pt-3.5 border-t border-slate-100 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
             <span className="text-xs font-bold text-slate-600">Round Size</span>
             <div className="grid grid-cols-4 gap-1.5 bg-slate-100 p-1.5 rounded-2xl w-full sm:w-auto sm:min-w-[280px]">
-              {([15, 30, 50, 100] as const).map((size) => (
+              {([10, 30, 50, 100] as const).map((size) => (
                 <button
                   key={size}
                   onClick={() => setSessionSize(size)}
@@ -237,15 +246,15 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           onClick={() =>
             startSession(
               'all',
-              selectedLevel === 'all' ? 'All Vocabulary Mix' : `CEFR ${selectedLevel.toUpperCase()} Complete Mix`,
-              '🏆'
+              selectedLevel === 'all' ? 'All Vocabulary Mix' : `CEFR ${selectedLevel.toUpperCase()} Complete Mix`
             )
           }
           className="relative overflow-hidden rounded-[28px] p-5 bg-gradient-to-br from-amber-50/80 via-white to-amber-100/40 border border-amber-200/80 text-slate-900 cursor-pointer shadow-2xs hover:shadow-sm hover:border-amber-300 transition-all group"
         >
           <div className="flex items-center justify-between">
             <span className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-950 text-[10px] font-black px-2.5 py-0.5 rounded-full border border-amber-200 shadow-2xs">
-              <span>🏆</span> Featured Smart Deck
+              <Trophy className="w-3 h-3 text-amber-700" />
+              <span>Featured Smart Deck</span>
             </span>
             <span className="text-xs font-bold text-amber-800 bg-amber-200/50 px-2 py-0.5 rounded-full">
               {totalLevelWords} words
@@ -289,20 +298,21 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
               {Object.entries(CATEGORIES_META).map(([cKey, cat]) => {
                 const count = levelFilteredWords.filter((w) => w.category === cKey).length;
                 const isDisabled = count === 0;
+                const CatIcon = cat.icon;
 
                 return (
                   <button
                     key={cKey}
                     disabled={isDisabled}
-                    onClick={() => startSession(cKey, cat.label, cat.emoji)}
+                    onClick={() => startSession(cKey, cat.label)}
                     className={`p-4 rounded-3xl border text-left flex flex-col justify-between transition-all select-none ${isDisabled
                       ? 'bg-slate-50 border-slate-200/60 opacity-40 cursor-not-allowed'
                       : 'bg-white border-slate-200/80 shadow-2xs hover:shadow-sm hover:border-indigo-300 hover:-translate-y-0.5 cursor-pointer'
                       }`}
                   >
                     <div className="space-y-1.5">
-                      <div className="w-10 h-10 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-center text-xl shadow-2xs">
-                        {cat.emoji}
+                      <div className="w-10 h-10 rounded-2xl bg-indigo-100 border border-indigo-200/70 flex items-center justify-center shadow-2xs">
+                        <CatIcon className="w-5 h-5 text-indigo-600" />
                       </div>
                       <h4 className="text-xs font-black text-slate-900 truncate">
                         {cat.label}
@@ -323,6 +333,13 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
             </div>
           )}
         </div>
+
+        <NoticeDialog
+          isOpen={!!emptyNoticeMessage}
+          title="No Cards Available"
+          message={emptyNoticeMessage || ''}
+          onClose={() => setEmptyNoticeMessage(null)}
+        />
       </div>
     );
   }
@@ -336,6 +353,9 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
     }
 
     const cat = CATEGORIES_META[currentCard.category] || CATEGORIES_META.other;
+    const CatIcon = cat.icon;
+    const ActiveDeckIcon =
+      activeDeckCategory === 'all' ? Trophy : CATEGORIES_META[activeDeckCategory]?.icon || Sparkles;
     const lvl = LEVEL_STYLES[currentCard.level] || LEVEL_STYLES.A1;
     const articleStyle = currentCard.article ? ARTICLE_PILL_STYLES[currentCard.article] : '';
 
@@ -343,9 +363,12 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
     const progressPercent = Math.min(100, Math.round((completedSoFar / initialSessionTotal) * 100));
 
     return (
-      <div className="max-w-md mx-auto space-y-4 animate-fadeIn pb-8">
-        {/* Top Player Navigation Bar */}
-        <div className="flex items-center justify-between text-xs font-bold text-slate-600">
+      <div className="max-w-md mx-auto space-y-3 sm:space-y-4 animate-fadeIn pb-2">
+        {/* Top Player Navigation Bar (sticky on mobile so Back button stays visible) */}
+        <div
+          className="sticky md:static z-20 -mx-4 px-4 sm:mx-0 sm:px-0 py-1.5 sm:py-0 bg-[#f8f7f4]/95 md:bg-transparent backdrop-blur-md md:backdrop-blur-none flex items-center justify-between text-xs font-bold text-slate-600"
+          style={{ top: 'calc(3.75rem + env(safe-area-inset-top, 0px))' }}
+        >
           <button
             onClick={() => setViewMode('hub')}
             className="inline-flex items-center gap-1 px-3 py-1.5 rounded-xl bg-white border border-slate-200 text-slate-700 hover:bg-slate-50 shadow-2xs transition"
@@ -355,8 +378,9 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           </button>
 
           <div className="flex items-center gap-2">
-            <span className="px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-extrabold text-[11px]">
-              {activeDeckEmoji} {activeDeckTitle}
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-slate-100 text-slate-700 font-extrabold text-[11px]">
+              <ActiveDeckIcon className="w-3 h-3 shrink-0 text-indigo-600" />
+              <span>{activeDeckTitle}</span>
             </span>
             <span className={`px-2 py-0.5 rounded-full text-[10px] font-black ${lvl.badgeBg} ${lvl.badgeText}`}>
               {currentCard.level}
@@ -386,7 +410,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           {/* Pastel Header Banner */}
           <div className="bg-indigo-50 border-b border-indigo-100 px-5 py-3 flex items-center justify-between">
             <span className="text-xs font-bold text-indigo-900 flex items-center gap-1.5">
-              <span>{cat.emoji}</span>
+              <CatIcon className="w-3.5 h-3.5 shrink-0" />
               <span>{cat.label}</span>
             </span>
             <span className="text-[10px] font-black bg-indigo-100 text-indigo-800 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
@@ -396,15 +420,15 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
 
           {/* Card Center Content */}
           <div className="p-7 sm:p-9 text-center space-y-4">
-            {/* 80x80 Emoji Box */}
-            <div className="w-20 h-20 mx-auto rounded-3xl bg-slate-50 border border-slate-100 flex items-center justify-center text-4xl shadow-2xs">
-              {cat.emoji}
+            {/* 80x80 Icon Box */}
+            <div className="w-20 h-20 mx-auto rounded-3xl bg-indigo-100 border border-indigo-200/70 flex items-center justify-center shadow-2xs">
+              <CatIcon className="w-9 h-9 text-indigo-600" />
             </div>
 
             {/* FRONT SIDE: Active Recall Prompt (English + Myanmar) */}
             {!isRevealed ? (
               <div className="space-y-2 py-2">
-                <h2 className="text-2xl sm:text-3xl font-black text-slate-900 leading-tight">
+                <h2 className="text-lg sm:text-xl font-black text-slate-900 leading-tight">
                   {currentCard.english}
                 </h2>
                 {currentCard.myanmar && (
@@ -427,7 +451,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                     </span>
                   )}
 
-                  <h2 className="text-3xl sm:text-4xl font-black text-slate-900 tracking-tight">
+                  <h2 className="text-lg sm:text-xl font-black text-slate-900 tracking-tight">
                     {currentCard.german}
                   </h2>
 
@@ -441,7 +465,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
                 </div>
 
                 {/* Example sentence callout */}
-                {currentCard.exampleGerman && (
+                {currentCard.type !== 'sentence' && currentCard.exampleGerman && (
                   <div className="bg-slate-50 border border-slate-200 rounded-2xl p-3 text-xs font-medium text-slate-800 flex items-start gap-2 text-left mt-2">
                     <Lightbulb className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
                     <div>
@@ -502,6 +526,8 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
   // VIEW 3: THE SESSION SUMMARY
   // =========================================================================
   if (viewMode === 'summary') {
+    const ActiveDeckIcon =
+      activeDeckCategory === 'all' ? Trophy : CATEGORIES_META[activeDeckCategory]?.icon || Sparkles;
     const totalAttempted = masteredCards.length + stillLearningCards.length;
     const scorePercent =
       totalAttempted > 0 ? Math.round((masteredCards.length / totalAttempted) * 100) : 100;
@@ -517,7 +543,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
             <span>Practice Round Complete!</span>
           </h2>
           <p className="text-xs text-slate-500 font-bold flex items-center justify-center gap-1.5">
-            <span className="text-base">{activeDeckEmoji}</span>
+            <ActiveDeckIcon className="w-4 h-4 text-indigo-600" />
             <span>{activeDeckTitle} • CEFR {selectedLevel.toUpperCase()}</span>
           </p>
         </div>
@@ -555,7 +581,7 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           {stillLearningCards.length > 0 && (
             <button
               onClick={startMissedWordsRound}
-              className="w-full py-3.5 px-4 rounded-2xl bg-indigo-600 text-white font-black text-xs hover:bg-indigo-700 shadow-xs transition flex items-center justify-center gap-2 cursor-pointer"
+              className="w-full py-3.5 px-4 rounded-2xl bg-amber-600 text-white font-black text-xs hover:bg-amber-700 shadow-xs transition flex items-center justify-center gap-2 cursor-pointer active:scale-95"
             >
               <RotateCcw className="w-4 h-4" />
               <span>Review Missed Words ({stillLearningCards.length})</span>
@@ -565,9 +591,8 @@ export const FlashcardsView: React.FC<FlashcardsViewProps> = ({
           <button
             onClick={() =>
               startSession(
-                activeDeckTitle === 'All Vocabulary Mix' ? 'all' : 'all',
-                activeDeckTitle,
-                activeDeckEmoji
+                activeDeckCategory,
+                activeDeckTitle
               )
             }
             className="w-full py-3.5 px-4 rounded-2xl bg-indigo-600 text-white font-black text-xs hover:bg-indigo-700 shadow-xs transition flex items-center justify-center gap-2 cursor-pointer"

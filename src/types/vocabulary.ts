@@ -1,3 +1,23 @@
+import {
+  Hand,
+  Users,
+  Home,
+  Utensils,
+  ShoppingBag,
+  Plane,
+  Briefcase,
+  GraduationCap,
+  HeartPulse,
+  Leaf,
+  Clock,
+  MapPin,
+  Smile,
+  Shirt,
+  Palette,
+  Sparkles,
+  type LucideIcon,
+} from 'lucide-react';
+
 export type CEFRLevel = 'A1' | 'A2' | 'B1' | 'B2' | 'C1' | 'C2';
 
 export type WordType = 'noun' | 'verb' | 'adjective' | 'adverb' | 'phrase' | 'sentence';
@@ -64,28 +84,28 @@ export interface VocabularyWord {
 export type NavigationTab = 'dashboard' | 'dictionary' | 'flashcards' | 'quiz';
 
 export interface CategoryMeta {
-  emoji: string;
+  icon: LucideIcon;
   label: string;
   pillClass: string;
 }
 
 export const CATEGORIES_META: Record<VocabularyCategory, CategoryMeta> = {
-  greetings: { emoji: '👋', label: 'Greetings', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
-  people: { emoji: '👥', label: 'People', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
-  home: { emoji: '🏠', label: 'Home', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
-  food: { emoji: '🥐', label: 'Food', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
-  shopping: { emoji: '🛍️', label: 'Shopping', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
-  travel: { emoji: '✈️', label: 'Travel', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
-  work: { emoji: '💼', label: 'Work', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
-  education: { emoji: '🎓', label: 'Education', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
-  health: { emoji: '❤️‍🩹', label: 'Health', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
-  nature: { emoji: '🌿', label: 'Nature', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
-  time: { emoji: '⏳', label: 'Time', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
-  places: { emoji: '📍', label: 'Places', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
-  emotions: { emoji: '😊', label: 'Emotions', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
-  clothing: { emoji: '🧥', label: 'Clothing', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
-  leisure: { emoji: '🎨', label: 'Leisure', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
-  other: { emoji: '✨', label: 'Other', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  greetings: { icon: Hand, label: 'Greetings', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  people: { icon: Users, label: 'People', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  home: { icon: Home, label: 'Home', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  food: { icon: Utensils, label: 'Food', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  shopping: { icon: ShoppingBag, label: 'Shopping', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  travel: { icon: Plane, label: 'Travel', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  work: { icon: Briefcase, label: 'Work', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  education: { icon: GraduationCap, label: 'Education', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  health: { icon: HeartPulse, label: 'Health', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  nature: { icon: Leaf, label: 'Nature', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  time: { icon: Clock, label: 'Time', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  places: { icon: MapPin, label: 'Places', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  emotions: { icon: Smile, label: 'Emotions', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  clothing: { icon: Shirt, label: 'Clothing', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  leisure: { icon: Palette, label: 'Leisure', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
+  other: { icon: Sparkles, label: 'Other', pillClass: 'bg-slate-100 text-slate-700 border-slate-200' },
 };
 
 export const CEFR_LEVELS_LIST: CEFRLevel[] = ['A1', 'A2', 'B1', 'B2', 'C1', 'C2'];

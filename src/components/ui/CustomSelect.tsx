@@ -1,10 +1,11 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { ChevronDown, Check } from 'lucide-react';
+import { ChevronDown, Check, type LucideIcon } from 'lucide-react';
 import { cn } from '@/utils/cn';
 
 export interface CustomSelectOption {
   value: string;
   label: string;
+  icon?: LucideIcon;
   emoji?: string;
   badge?: string;
 }
@@ -80,7 +81,11 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
         aria-expanded={isOpen}
       >
         <span className="truncate flex items-center gap-1.5">
-          {selectedOption?.emoji && <span className="text-sm shrink-0">{selectedOption.emoji}</span>}
+          {selectedOption?.icon ? (
+            <selectedOption.icon className="w-3.5 h-3.5 shrink-0 text-slate-500" />
+          ) : (
+            selectedOption?.emoji && <span className="text-sm shrink-0">{selectedOption.emoji}</span>
+          )}
           <span className="truncate">{selectedOption ? selectedOption.label : placeholder}</span>
         </span>
         <ChevronDown
@@ -117,7 +122,11 @@ export const CustomSelect: React.FC<CustomSelectProps> = ({
                 )}
               >
                 <div className="flex items-center gap-2 truncate">
-                  {opt.emoji && <span className="text-sm shrink-0">{opt.emoji}</span>}
+                  {opt.icon ? (
+                    <opt.icon className="w-3.5 h-3.5 shrink-0 text-slate-500" />
+                  ) : (
+                    opt.emoji && <span className="text-sm shrink-0">{opt.emoji}</span>
+                  )}
                   <span className="truncate">{opt.label}</span>
                 </div>
                 {isSelected && <Check className="w-3.5 h-3.5 text-indigo-600 shrink-0 ml-1.5" />}

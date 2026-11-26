@@ -57,6 +57,11 @@ export const App: React.FC = () => {
     setCurrentTab(tab);
   };
 
+  // Reset scroll position when switching top-level tabs
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, [currentTab]);
+
   const renderContent = () => {
     switch (currentTab) {
       case 'dashboard':

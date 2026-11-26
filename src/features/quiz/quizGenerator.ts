@@ -148,7 +148,6 @@ export function generateArticleQuestion(targetWord: VocabularyWord): QuizQuestio
   const options: QuizOption[] = articles.map((item) => ({
     id: `opt-article-${item.article}-${targetWord.id}`,
     label: item.article,
-    subLabel: `${item.genderEn}`,
     isCorrect: targetWord.article === item.article,
   }));
 
@@ -275,14 +274,12 @@ export function generateSentenceQuestion(
   const correctOption: QuizOption = {
     id: `opt-sentence-correct-${targetWord.id}`,
     label: targetWord.german,
-    subLabel: targetWord.type === 'noun' && targetWord.article ? `(${targetWord.article})` : undefined,
     isCorrect: true,
   };
 
   const distractorOptions: QuizOption[] = distractors.map((d) => ({
     id: `opt-sentence-distractor-${d.id}`,
     label: d.german,
-    subLabel: d.type === 'noun' && d.article ? `(${d.article})` : undefined,
     isCorrect: false,
   }));
 

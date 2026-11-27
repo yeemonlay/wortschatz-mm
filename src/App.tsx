@@ -4,6 +4,7 @@ import { DashboardView } from '@/features/dashboard/DashboardView';
 import { WordBankView } from '@/features/vocabulary/WordBankView';
 import { FlashcardsView } from '@/features/flashcards/FlashcardsView';
 import { QuizView } from '@/features/quiz/QuizView';
+import { SupportView } from '@/features/support/SupportView';
 import { AdminLoginModal } from '@/components/modals/AdminLoginModal';
 import { WordFormModal } from '@/components/modals/WordFormModal';
 import { ImportExportModal } from '@/components/modals/ImportExportModal';
@@ -86,6 +87,8 @@ export const App: React.FC = () => {
         return <FlashcardsView words={words} loading={wordsLoading} />;
       case 'quiz':
         return <QuizView words={words} loading={wordsLoading} />;
+      case 'support':
+        return <SupportView />;
       default:
         return (
           <DashboardView

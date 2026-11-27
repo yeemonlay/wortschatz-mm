@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, BookOpen, Sparkles, Award, Crown, Lock, Plus, Upload, Download } from 'lucide-react';
+import { Layers, BookOpen, Sparkles, Award, Heart, Crown, Lock, Plus, Upload, Download } from 'lucide-react';
 import { NavigationTab } from '@/types';
 import { cn } from '@/utils/cn';
 import { User } from 'firebase/auth';
@@ -31,6 +31,7 @@ export const Navbar: React.FC<NavbarProps> = ({
     { id: 'dictionary' as NavigationTab, label: 'Word Bank', icon: BookOpen },
     { id: 'flashcards' as NavigationTab, label: 'Flashcard', icon: Sparkles },
     { id: 'quiz' as NavigationTab, label: 'Quiz', icon: Award },
+    { id: 'support' as NavigationTab, label: 'Support', icon: Heart },
   ];
 
   const isAdmin = !!currentUser;

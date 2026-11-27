@@ -81,7 +81,7 @@ export interface VocabularyWord {
   updatedAt?: number;
 }
 
-export type NavigationTab = 'dashboard' | 'dictionary' | 'flashcards' | 'quiz';
+export type NavigationTab = 'dashboard' | 'dictionary' | 'flashcards' | 'quiz' | 'support';
 
 export interface CategoryMeta {
   icon: LucideIcon;

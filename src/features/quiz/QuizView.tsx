@@ -206,7 +206,7 @@ export const QuizView: React.FC<QuizViewProps> = ({
     const totalLevelWords = levelFilteredWords.length;
 
     return (
-      <div className="space-y-4 md:space-y-6 animate-fadeIn pb-8 max-w-5xl mx-auto">
+      <div className="space-y-4 md:space-y-6 animate-fadeIn pb-8">
         {/* Hub Header */}
         <div className="flex items-start justify-between flex-wrap gap-2">
           <div>

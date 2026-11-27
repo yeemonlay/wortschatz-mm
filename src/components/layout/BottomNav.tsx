@@ -1,5 +1,5 @@
 import React from 'react';
-import { Layers, BookOpen, Sparkles, Award } from 'lucide-react';
+import { Layers, BookOpen, Sparkles, Award, Heart } from 'lucide-react';
 import { NavigationTab } from '@/types';
 import { cn } from '@/utils/cn';
 
@@ -14,6 +14,7 @@ export const BottomNav: React.FC<BottomNavProps> = ({ currentTab, onSelectTab })
     { id: 'dictionary' as NavigationTab, label: 'Word Bank', icon: BookOpen },
     { id: 'flashcards' as NavigationTab, label: 'Flashcard', icon: Sparkles },
     { id: 'quiz' as NavigationTab, label: 'Quiz', icon: Award },
+    { id: 'support' as NavigationTab, label: 'Support', icon: Heart },
   ];
 
   return (
